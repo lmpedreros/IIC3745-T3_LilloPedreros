@@ -1,0 +1,23 @@
+
+# NO DEBEN MODIFICAR ESTE ARCHIVO, EN ESPECIFICO DEBE SEGUIR UTILIZANDO LAS VARIABLES DE ENTORNO PARA CONECTARSE A LA BASE DE DATOS
+# EN CASO DE MODIFICARLO Y MANTENERLO EN LA ENTREGA SE LES PODRIA APLICAR UN DESCUENTO POR LO TANTO DE HACER CAMBIOS NO LOS SUBAN O RESTAURENLOS ANTES DE ENTREGAR
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: <%= ENV['CYPRESS'] ? 'Testing_db_test' : 'Testing_db_development' %> # Se ocupa la base de datos development cuando no este definido Cypress=1
+  username: <%= ENV["DB_USER"] %>
+  password: <%= ENV["DB_PASSWORD"] %>
+
+test:
+  <<: *default
+  database: Testing_db_test
+  username: <%= ENV["DB_USER"] %>
+  password: <%= ENV["DB_PASSWORD"] %>
+
+production:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>

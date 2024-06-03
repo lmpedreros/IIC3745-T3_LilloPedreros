@@ -1,0 +1,15 @@
+.section {
+  position: relative;
+  padding-left: 10px;
+}
+
+.message-child {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-left: 10px;
+}
+
+.message-children {
+  margin-top: 10px;
+}

@@ -1,0 +1,62 @@
+require: rubocop-rails
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'vendor/**/*'
+    - 'test/fixtures/**/*'
+    - 'db/**/*'
+    - 'bin/**/*'
+    - 'log/**/*'
+    - 'tmp/**/*'
+    - 'app/views/**/*'
+    - 'config/environments/*'
+    - 'config/routes.rb'
+    - 'node_modules/**/*'
+    - 'cypress/cypress_helper.rb'
+    - 'spec/rails_helper.rb'
+    - 'cypress/app_commands/log_fail.rb'
+    - 'cypress/app_commands/factory_bot.rb'
+    - 'cypress/app_commands/activerecord_fixtures.rb'
+
+# Layout
+Layout/LineLength:
+  Max: 120
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 40
+  Exclude:
+    - 'test/**/*'
+    - 'spec/**/*'
+
+Metrics/AbcSize:
+  Max: 30
+  Exclude:
+    - 'test/**/*'
+    - 'spec/**/*'
+    - 'app/models/ability.rb'
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/ClassLength:
+  Exclude:
+    - 'app/controllers/**/*'
+    - 'test/**/*'
+    - 'spec/**/*'
+
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+Layout/EndOfLine:
+  Enabled: false
+

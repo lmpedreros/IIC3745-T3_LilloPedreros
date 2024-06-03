@@ -1,0 +1,57 @@
+<head> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <meta charset="utf-8">
+</head>
+
+<body class="has-background-white-ter">
+    <div class="section" style="margin-top: 1rem; margin-left: 1rem;">
+        <div class="content">
+            <p class="content is-large"> <b> Mis canchas y productos deseados </b> </p>
+        </div>
+        <% if @deseados.count == 0 %>
+            <p class="content is-large has-text-info"> No tienes canchas ni productos deseados, prueba a agregar algo! </p>
+            <br>
+        <% end %>
+        <% @deseados.each do |deseado| %>
+            <% product = Product.find(deseado) %>
+            <div class="card">
+                <header class="card-header has-background-warning">
+                    <p class="card-header-title"></p>
+                </header>
+                <div class="columns">
+                    <div class="column is-one-fifth">
+                        <div class="image-frame">
+                            <% if product.image.attached?%>
+                                <%= image_tag product.image, class: "product-img" %>
+                            <% end %>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="card-content">
+                            <div class="content is-medium">
+                                <% if product.categories == "Cancha"%>
+                                    <p> Cancha: <%= product.nombre %></p>
+                                    <p> Precio por reserva: <%= product.precio.to_i.to_formatted_s(:currency, locale: :es) %> </p>
+                                <% else %>
+                                    <p> Producto: <%= product.nombre %></p>
+                                    <p> Precio: <%= product.precio.to_i.to_formatted_s(:currency, locale: :es) %> </p>
+                                <% end %>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <%= link_to "Ir al producto", "/products/leer/#{deseado}", method: :get, class: "button is-primary" %>
+                        </div>
+                      <%= form_with(url: "/users/eliminar_deseado/#{deseado}",  method: :delete, html: {class: "form-horizontal",onsubmit: "return confirm('¿Estás seguro de que quieres quitar este elemento de tus deseos?')"}) do |form|%>
+                            <%= token_tag nil %> <!-- Protección CSRF -->
+                            <button type="submit" class="card-footer-item button is-danger">Quitar de deseos</button>
+
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+            <br>
+        <% end %>
+    </div>
+    <br>
+</body>

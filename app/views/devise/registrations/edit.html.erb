@@ -1,0 +1,87 @@
+<div class="columns is-centered">
+  <div class="column is-half" style="margin-top: 6rem;">
+    <h2 class="title is-2 has-text-centered">Editar usuario</h2>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+      <% if resource.errors.any? %>
+        <div class="field">
+          <div class="notification is-danger">
+            <%= render "devise/shared/error_messages", resource: resource %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="field">
+        <%= f.label :email, class: "label" %>
+        <div class="control has-icons-left">
+          <%= f.email_field :email, class: 'input', autofocus: true, autocomplete: "email" %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-envelope"></i>
+          </span>
+        </div>
+      </div>
+
+      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+        <div>Esperando confirmación para: <%= resource.unconfirmed_email %></div>
+      <% end %>
+
+      <div class="field">
+        <%= f.label :name, "Nombre", class: "label" %>
+        <div class="control has-icons-left">
+          <%= f.text_field :name, class: 'input' %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-user"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= f.label :password, "Cambiar contraseña", class: "label" %>
+        <% if @minimum_password_length %>
+          <em><%= @minimum_password_length %> caracteres mínimo</em>
+        <% end %>
+        <i>(deja en blanco si no quieres modificar tu contraseña)</i>
+        <div class="control has-icons-left">
+          <% if action_name == 'edit' && f.object.password.present? %>
+            <%= f.password_field :password, class: 'input', autocomplete: "new-password" %>
+          <% else %>
+            <%= f.password_field :password, class: 'input', autocomplete: "new-password", value: nil %>
+          <% end %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-lock"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= f.label :password_confirmation, "Confirma tu contraseña nueva", class: "label" %>
+        <div class="control has-icons-left">
+          <%= f.password_field :password_confirmation, class: 'input', autocomplete: "new-password" %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-lock"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= f.label :current_password, "Contraseña actual", class: "label" %> <i>(debes ingresar tu contraseña actual para guardar los cambios)</i>
+        <div class="control has-icons-left">
+          <%= f.password_field :current_password, class: 'input', autocomplete: "current-password" %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-lock"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= f.submit "Actualizar datos", class: "button is-primary is-fullwidth" %>
+      </div>
+    <% end %>
+
+    <div class="has-text-centered" style="margin-top: 0.25rem;">
+      <p>¿Deseas eliminar tu cuenta permanentemente?</p>
+      <%= button_to "Eliminar mi cuenta", registration_path(resource_name), data: { confirm: "Estas a punto de eliminar tu cuenta PERMANENTEMENTE. ¿Deseas continuar?", turbo_confirm: "Estas a punto de eliminar tu cuenta PERMANENTEMENTE. ¿Deseas continuar?" }, method: :delete, class: "button is-danger is-outlined" %>
+    </div>
+    <%= link_to "Volver al perfil", "/users/show" %>
+  </div>
+</div>

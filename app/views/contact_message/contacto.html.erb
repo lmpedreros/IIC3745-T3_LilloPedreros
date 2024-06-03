@@ -1,0 +1,115 @@
+<body class="has-background-white-ter">
+  <div class="section">
+    <% if user_signed_in? && current_user.role == "admin" %>
+      <!-- Mostrar bandeja de administrador -->
+      <div class="columns is-centered">
+        <div class="column is-12" style= "margin-top: 3rem;">
+          <i>(Visualizando como administrador)</i>
+          <h1 class="title is-1">Bandeja de mensajes</h1>
+          <table class="table is-fullwidth">
+            <thead>
+              <tr>
+                <th>Nombre e información de contacto</th>
+                <th>Mensaje</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @contact_messages.each do |contact| %>
+                <tr>
+                  <td>
+                    <p><strong><%= contact.name %></strong></p>
+                    <p><%= contact.mail %></p>
+                    <p><%= contact.phone %></p>
+                  </td>
+                  <td>
+                    <p><strong><%= contact.title %></strong></p>
+                    <p><%= contact.body %></p>
+                  </td>
+                  <td>
+                  <!-- Formulario de descartar -->
+                    <%= form_with(url: "/contacto/eliminar/#{contact.id}",  method: :delete) do |form|%>
+
+                    <!-- Protección CSRF -->
+                    <%= token_tag nil %>
+                    <button class="button is-danger is-small">Descartar</button>
+                  <% end %>>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+          <!-- Comprobar si existen mensajes para descartar -->
+          <% if @contact_messages.count > 0 %>
+            <!-- Formulario para eliminar todos los mensajes en la bandeja -->
+            <%= form_with(url: "/contacto/limpiar",  method: :delete) do |form|%>
+              <!-- Protección CSRF -->
+              <%= token_tag nil %>
+              <button class="button is-danger is-fullwidth">Descartar todos los mensajes</button>
+            <% end %>>
+          <% end %>
+        </div>
+    <% else %>
+      <!-- Formulario de contacto -->
+      <form method="POST" action="/contacto/crear" enctype="multipart/form-data">
+          <!-- Protección CSRF -->
+          <%= token_tag nil %>
+          <div class="columns is-centered">
+              <div class="column is-half" style= "margin-top: 3rem;">
+                  <h1 class="title is-1">Contacto</h1>
+                  <div class="field" >
+                      <label class="label">Nombre*</label>
+                      <div class="control has-icons-left">
+                          <input class="input" placeholder="Ingresa tu nombre y apellido" type="text" name="contact[name]" maxlength="50" required>
+                          <span class="icon is-small is-left">
+                          <i class="fas fa-user"></i>
+                      </span>
+                      </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Correo electrónico*</label>
+                    <div class="control has-icons-left">
+                      <input class="input" type="email" placeholder="usuario@gmail.com" name="contact[mail]" maxlength="50" required>
+                      <span class="icon is-small is-left">
+                          <i class="fas fa-envelope"></i>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Teléfono</label>
+                    <div class="control has-icons-left">
+                      <input class="input" type="text" placeholder="+569XXXXXXXX" name="contact[phone]" maxlength="20">
+                      <span class="icon is-small is-left">
+                          <i class="fas fa-phone"></i>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Mensaje*</label>
+                    <div class="control has-icons-left">
+                      <input class="input" type="text" placeholder="Asunto" name="contact[title]" maxlength="50" required>
+                      <span class="icon is-small is-left">
+                          <i class="fas fa-font"></i>
+                      </span>
+                    </div>
+                    <div class="control has-icons-left">
+                      <textarea class="textarea has-fixed-size" placeholder="Escribe tu mensaje aquí..." name="contact[body]" maxlength="500" required></textarea>
+                    </div>
+                  </div>
+
+                  <div class="field is-grouped">
+                      <div class="control">
+                          <button class="button is-primary is-fullwidth">Enviar</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </form>
+    <% end %>
+  </div>
+  </div>
+</body>
+
+

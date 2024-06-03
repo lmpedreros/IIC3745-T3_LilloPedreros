@@ -1,0 +1,99 @@
+<head> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <meta charset="utf-8">
+</head>
+
+<body class="has-background-white-ter">
+    <div class="section mt-6 ml-1">
+        <% if current_user.role == "admin" %><i>(Visualizando como administrador)</i><% end %>
+        <h1 class="title is-2">Buzón de mensajes</h1>
+        <div class="box">
+            <% if @user_messages.empty? %>
+                <p class="content is-large has-text-info">No tienes mensajes en tu cuenta.</p>
+            <% else %>
+                <!-- Funcion para renderizar un mensaje -->
+                <% def render_message(message) %>
+                    <% current_product = Product.find(message.product_id) %>
+                    <% unless @shown_message_ids.include?(message.id) %>
+                        <% if message.parent.present? %>
+                            <% unless @shown_message_ids.include?(message.parent.id) %>
+                                <%= render_message(message.parent) %>
+                                <% return %>
+                            <% end %>
+                        <% end %>
+                        <article class="media">
+                            <figure class="media-left">
+                                <% if message.parent.present? %>
+                                    <span class="icon is-large">
+                                        <i class="fas fa-level-up-alt fa-rotate-90 fa-lg has-text-info"></i>
+                                    </span>
+                                <% end %>
+                            </figure>
+                            <div class="media-content">
+                                <div class="content ">
+                                    <h1>
+                                        <span class="tags has-addons are-medium">
+                                            
+                                            <% if current_product.user_id == message.user_id %>
+                                                <span class="tag is-warning">
+                                                    <span class="icon-text">
+                                                        <span class="icon"><i class="fas fa-medal"></i></span>
+                                                        <span>Vendedor</span>
+                                                    </span>
+                                                </span>
+                                            <% end %>
+                                            <span class="tag is-info has-text-weight-bold"><%= message.user.name %></span>
+                                            <span class="tag is-light has-text-weight-bold"><%= message.created_at.strftime("%d/%m/%Y") %></span>
+                                            <span class="tag is-link">Producto (#<%= current_product.id %>): <%= current_product.nombre %></span>
+                                        </span>
+                                    </h1>
+                                    <blockquote><%= message.body %></blockquote>
+                                </div>
+                                <nav class="level is-mobile">
+                                    <div class="level-left">
+                                        <div class="buttons is-grouped">
+                                            <% if current_user.id == message.user_id || current_user.role == "admin" %>
+                                                <form method="DELETE" action="/message/eliminar" enctype="multipart/form-data">
+                                                    <%= hidden_field_tag :message_id, message.id %>
+                                                    <%= hidden_field_tag :product_id, current_product.id %>
+                                                    <%= token_tag nil %>
+                                                    <div class="field" style="display: flex;">
+                                                        <div class="control mx-2">
+                                                            <button class="button is-danger is-small" onclick="return confirm('¿Estás seguro de que deseas eliminar este comentario?')">
+                                                                <span class="icon is-small"><i class="fas fa-trash"></i></span>
+                                                                <% if current_user.id != message.user_id && current_user.role == "admin" %>
+                                                                    <span><strong>Eliminar Comentario (Como administrador)</strong></span>
+                                                                <% else %>
+                                                                    <span><strong>Eliminar Comentario</strong></span>
+                                                                <% end %>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            <% end %>
+                                            <%= button_to 'Ir al producto', "/products/leer/#{message.product_id}", method: :get, class:'button is-primary is-small mx-2' %>
+                                        </div>
+                                    </div>
+                                </nav>
+                                <!-- Incluir en mensajes ya mostrados -->
+                                <% @shown_message_ids << message.id %>
+                                <!-- Mostrar Respuestas -->
+                                <% if message.children&.any? %>
+                                    <% message.children.each do |child| %>
+                                        <%= render_message(child) %>
+                                    <% end %>
+                                <% end %>
+                            </div>
+                        </article>
+                    <% end %>
+                    <% return %>
+                <% end %>
+                <!-- Renderizar mensajes -->
+                <% @user_messages.each do |message| %>
+                    <%= render_message(message) %>
+                <% end %>
+            <% end %>
+        </div>
+    </div>
+</body>

@@ -1,0 +1,137 @@
+<body class="has-background-white-ter">
+    <!-- Comprobar si el usuario está logeado -->
+    <div class="content mt-6 mx-3">
+        <% if user_signed_in? %>
+            <div class="section">
+                <div class="box">
+                    <h1 class="title has-text-centered">Detalles de tu compra</h1>
+                    <hr>
+                    <% if @shopping_cart.products.count > 0 %>
+                        <!-- Mostrar resumen de items -->
+                        <h2 class="subtitle has-text-centered">Resumen de productos</h2>
+                        <!-- Boton para ir a editar el carrito -->
+                        <%= link_to "Volver y editar carrito", "/carro", method: :get, class: "button is-warning" %>
+                        <table>
+                            <tr>
+                            <th>Producto</th>
+                            <th>Unidades</th>
+                            <th>Precio Total</th>
+                            </tr>
+                            <% @shopping_cart.products.each do |product_id, amount| %>
+                                <% product = Product.find_by_id(product_id) %>
+                                <% unless product.present? %>
+                                    <% @shopping_cart.products.delete(product_id) %>
+                                    <% @shopping_cart.update(products: @shopping_cart.products) %>
+                                    <% next %>
+                                <% end %>
+                                <tr>
+                                    <td>
+                                        <p><%= product.nombre %></p>
+                                      <% if product.image.attached? %>
+                                        <p><%= image_tag(product.image, class: "cart_product_image_small") %></p>
+                                      <% else %>
+                                        <p><%= image_tag("default_product.png", class: "cart_product_image_small") %></p>
+                                      <% end %>
+                                    </td>
+                                    <td><%= amount %></td>
+                                    <td><%= (product.precio.to_i * amount).to_formatted_s(:currency, locale: :es) %></td>
+                                </tr>
+                            <% end %>
+                            <tr>
+                                <td><strong>Total</strong></td>
+                                <td></td>
+                                <td><strong><%= @shopping_cart.precio_total.to_formatted_s(:currency, locale: :es) %></strong></td>
+                            </tr>
+                        </table>
+                        <p class="has-text-centered">Cantidad de productos: <%= @shopping_cart.products.count %></p>
+                        <hr>
+                        <!-- Formulario para realizar la compra -->
+                        <form action="/carro/realizar_compra" method="POST">
+                            <!-- Datos de envio -->
+                            <h2 class="subtitle has-text-centered">Datos de envío</h2>
+                            <!-- Seleccionar envio o retiro -->
+                            <div class="field">
+                                <label class="label">Retiro/Envío</label>
+                                <div class="control">
+                                    <label class="radio">
+                                        <input type="radio" name="retiro" value="envio" checked>
+                                        Envío a domicilio (valor: <%= @shopping_cart.costo_envio.to_formatted_s(:currency, locale: :es) %>)
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="retiro" value="tienda">
+                                        Retiro en tienda (gratis)
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="datos_envio" class="box">
+                                <div class="field">
+                                    <label class="label">Nombre*</label>
+                                    <div class="control">
+                                        <input class="input" type="text" name="adress[nombre]" id="nombre" placeholder="ej: Juan Perez Rojas" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Dirección*</label>
+                                    <div class="control">
+                                        <input class="input" type="text" name="adress[direccion]" id="direccion" placeholder="ej: Av. San Pablo 123" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Comuna*</label>
+                                    <div class="control">
+                                        <input class="input" type="text" name="adress[comuna]" id="comuna" placeholder="ej: Lo Prado" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Region*</label>
+                                    <div class="control">
+                                        <input class="input" type="text" name="adress[region]" id="region" placeholder="ej: Metropolitana" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <!-- Mostrar costo final con y sin envío -->
+                            <h2 class="subtitle has-text-centered">Costo final</h2>
+                            <p id="costo_total" class="has-text-centered">Costo total (con envío): <%= @total_pago.to_formatted_s(:currency, locale: :es) %></p>
+                            <!-- Submit de pagar -->
+                            <p class="has-text-centered"><%= button_to "Pagar", "/carro/realizar_compra", method: :post, class: "button is-primary" %></p>
+                        </form>
+                    <% else %>
+                        <p class="has-text-centered has-text-danger">No tienes productos en tu carrito</p>
+                    <% end %>
+                </div>
+            </div>
+        <% else %>
+            <p>Debes iniciar sesión para ver tu carrito de compras</p>
+        <% end %>
+    </div>
+
+    <!-- Script para comprobar si se seleccionó envío -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var radioEnvio = document.querySelector('input[name="retiro"][value="envio"]');
+            var datosEnvio = document.getElementById("datos_envio");
+            radioEnvio.addEventListener("change", function() {
+                if (radioEnvio.checked) {
+                    datosEnvio.style.display = "block";
+                    document.getElementById("nombre").required = true;
+                    document.getElementById("direccion").required = true;
+                    document.getElementById("comuna").required = true;
+                    document.getElementById("region").required = true;
+                    document.getElementById("costo_total").innerHTML = "Costo total (con envío): <%= @total_pago.to_formatted_s(:currency, locale: :es) %>";
+                }
+            });
+            var radioTienda = document.querySelector('input[name="retiro"][value="tienda"]');
+            radioTienda.addEventListener("change", function() {
+                if (radioTienda.checked) {
+                    datosEnvio.style.display = "none";
+                    document.getElementById("nombre").required = false;
+                    document.getElementById("direccion").required = false;
+                    document.getElementById("comuna").required = false;
+                    document.getElementById("region").required = false;
+                    document.getElementById("costo_total").innerHTML = "Costo total (sin envío): <%= @shopping_cart.precio_total.to_formatted_s(:currency, locale: :es) %>";
+                }
+            });
+        });
+    </script>
+</body>

@@ -1,0 +1,18 @@
+.image-frame {
+  border: 5px solid #ffffff;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  background-color: #ffffff;
+  max-width:700px;
+  height:500px;
+  width:auto;
+  }
+
+.index-image-frame {
+  display: flex;
+  justify-content: center;
+  max-width:300px;
+  height:300px;
+  width:auto;
+  }

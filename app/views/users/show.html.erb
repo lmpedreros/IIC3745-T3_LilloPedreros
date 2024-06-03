@@ -1,0 +1,98 @@
+<div class="section">
+  <div class="container">
+    <div class="columns">
+      <% if current_user.image.attached? %>
+        <div class="column is-3">
+          <div class="image">
+            <%= image_tag(current_user.image)%>
+          </div>
+        </div>
+      <% else %>
+        <div class="column is-3">
+          <div class="image">
+            <%= image_tag('default_user.png', alt: 'Imagen predeterminada de usuario') %>
+          </div>
+        </div>
+      <% end %>
+      <div class="column is-9 is-flex is-flex-direction-column">
+        <div class="field">
+          <h2 class="title is-1 has-text-centered">Mis datos</h2>
+          <div class="field mt-4">
+            <% if user_signed_in? %>
+              <% if flash[:error] %>
+                <div class="notification is-danger">
+                  <p class="is-size-7"><%= flash[:error] %></p>
+                </div>
+              <% end %>
+              </div>
+              <%= form_with(url: "/users/actualizar_imagen",  method: :patch, multipart: true) do |form|%>
+                <!-- Protección CSRF -->
+                <%= token_tag nil %>
+                <div class="tags has-addons mt-4">
+                <span class="tag is-large is-primary">
+                  <span class="icon-text">
+                    <span class="icon">
+                      <i class="fas fa-image"></i>
+                    </span>
+                    <span>Foto de perfil</span>
+                  </span>
+                </span>
+                  <span class="tag is-large">
+                  <div class="control">
+                    <input class="input" placeholder="Imagen" type="file" name="image">
+                  </div>
+                </span>
+                  <span class="tag is-large">
+                  <div class="control">
+                    <button class="button is-info is-fullwidth">Actualizar imagen</button>
+                  </div>
+                </span>
+                </div>
+              <% end %>
+              <div class="tags has-addons mt-4">
+              <span class="tag is-large is-primary">
+                <span class="icon-text">
+                  <span class="icon">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <span>Nombre de usuario</span>
+                </span>
+              </span>
+                <span class="tag is-large"><%= @user.name %></span>
+              </div>
+              <div class="tags has-addons mt-4">
+              <span class="tag is-large is-primary">
+                <span class="icon-text">
+                  <span class="icon">
+                    <i class="fas fa-envelope"></i>
+                  </span>
+                  <span>Correo electrónico</span>
+                </span>
+              </span>
+                <span class="tag is-large"><%= @user.email %></span>
+              </div>
+              <div class="tags has-addons mt-4">
+              <span class="tag is-large is-primary">
+                <span class="icon-text">
+                  <span class="icon">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                  <span>Contraseña</span>
+                </span>
+              </span>
+                <span class="tag is-large">**********</span>
+              </div>
+              <%= link_to "Editar Cuenta", edit_user_registration_path, class: "button is-dark"%>
+            <% else %>
+              <h2 class="title has-text-centered">No has iniciado sesión</h2>
+              <p class="has-text-centered">Debes iniciar sesión para continuar</p>
+              <br>
+              <div class="has-text-centered">
+                <%= link_to "Iniciar Sesión", new_user_session_path, class: "button is-primary"%>
+              </div>
+            <% end %>
+            </div>
+      </div>
+    </div>
+  </div>
+</div>

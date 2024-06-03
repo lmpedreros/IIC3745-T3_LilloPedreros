@@ -1,0 +1,136 @@
+/* Estilo general */
+body {
+  font-family: 'Proxima Nova', sans-serif;
+}
+
+/* Estilo para el contenido de la página */
+.main-content {
+  margin-top: 70px; /* Ajusta el valor para que coincida con la altura de la barra de navegación */
+}
+
+/* Estilo para icono de perfil en navbar */
+.navbar-profile-icon {
+  object-fit: cover;
+  border-radius: 50%;
+  height: 32px;
+  width: 32px;
+}
+/* Estilo tamaño reducido para imagenes de productos */
+.cart_product_image_small{
+  width: 32px;
+  height: 32px;
+}
+.cart_product_image_medium{
+  width: 64px;
+  height: 64px;
+}
+
+/* Estilo para notificaciones en navbar */
+.navbar-notification {
+  margin-top: 3.2rem;
+}
+
+/* Estilo para review.crear (Crear reseña) */
+.crear-resena {
+  height: 100% 100%;
+  background-size: 100% 100%;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* Estilo para ver perfil */
+.perfil-usuario {
+  height: 100% 100%;
+  background-size: 100% 100%;
+  padding-top: 20px;
+  margin-top: 10px;
+}
+
+/* Estilo para class="hello-world" */
+.hello-world {
+  text-align: center;
+  font-size: 5vw;
+  margin-top: 30vh;
+  color: white;
+}
+
+/* Estilo para span de Hello world */
+.hello-world span {
+  display: inline-block;
+  transform: translateY(-1000px);
+  animation: fall 1s ease-in-out forwards;
+}
+
+/* Estilo para container de Hello World*/
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  text-align: center;
+  font-size: 5rem;
+  margin-top: 30vh;
+  color: rgb(0, 0, 0);
+}
+
+  
+@keyframes fallingLetter {
+  0% {
+    transform: translateY(-150%);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+  40% {
+    transform: translateY(-30%);
+  }
+  60% {
+    transform: translateY(0%);
+  }
+  80% {
+    transform: translateY(-10%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+  
+.letter {
+  display: inline-block;
+  animation: fallingLetter 1s ease-in-out;
+  animation-fill-mode: both;
+}
+  
+@media screen and (max-width: 768px) {
+  /* Ajustar estilos para pantallas de hasta 768px de ancho */
+  .letter {
+    font-size: 3vw;
+    margin-top: 20vh;
+  }
+}
+  
+@media screen and (max-width: 576px) {
+  /* Ajustar estilos para pantallas de hasta 576px de ancho */
+  .letter {
+    font-size: 2vw;
+    margin-top: 10vh;
+  }
+}
+@media screen and (max-height: 576px) {
+  /* Ajustar estilos para pantallas de hasta 576px de ancho */
+  .letter {
+    font-size: 2vw;
+    margin-top: 10vh;
+  }
+}
+@media screen and (max-height: 768px) {
+  /* Ajustar estilos para pantallas de hasta 768px de ancho */
+  .letter {
+    font-size: 3vw;
+    margin-top: 20vh;
+  }
+}

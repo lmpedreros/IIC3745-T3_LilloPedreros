@@ -1,0 +1,20 @@
+<div class="columns is-centered">
+  <div class="column is-half" style= "margin-top: 6rem;">
+    <h2 class="title is-2 has-text-centered">¿Olvidaste tu contraseña?</h2>
+
+    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div class="field">
+        <label class="label">Correo electrónico</label>
+        <%= f.email_field :email, class: 'input', autofocus: true, autocomplete: "email" %>
+      </div>
+
+      <div class="actions">
+        <%= f.submit "Envíame instrucciones para modificar mi contraseña", class: "button is-primary is-fullwidth" %>
+      </div>
+    <% end %>
+
+    <%= render "devise/shared/links" %>
+  </div>
+</div>

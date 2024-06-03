@@ -1,2 +1,9 @@
-# IIC3745-T3_LilloPedreros
-Repositorio Tarea 3 de Testing
+## Tarea X
+
+### Logros de la entrega:
+[Recuerden especificar quien hizo cada cosa]
+*
+*
+
+### Informacion para el correcto:
+Incluir aqui cualquier detalle que pueda ser importante al momento de corregir.

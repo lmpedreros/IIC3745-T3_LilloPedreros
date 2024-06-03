@@ -1,0 +1,132 @@
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= stylesheet_link_tag 'home', media: 'all' %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <script defer src= "https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+  <div class="principal">
+    <div class="columna">
+      <div class="contenido">
+        <p style="font-size: 3vh;"> Ejercita. Juega. Disfruta. </p>
+        <p style="font-size: 3vh;"> Ofrecemos una forma eficaz para conseguir tus productos y servicios de Padel.</p>
+        <a class="button is-dark" href="/products/index"> Ver canchas y productos</a>
+      </div>
+    </div>
+    <div class="imagen-base">
+      <%= image_tag("base.jpg", alt: "Imagen principal que sale al cominezo de la pagina. Personas jugando padel") %>
+    </div>
+  </div>
+
+  <div class="info_amarilla fade-in">
+    <div class="columna">
+      <p class="texto_grande" style="color:black">Con el servicio y proveedor correcto, ocurren grandes cosas</p>
+    </div>
+    <div class="columna">
+      <p>Te ofrecemos las mejores canchas, seguras, ajustadas a tus necesidades y en la disponibilidad que escojas!. Y como todo buen servicio, si requieres de nuevos accesorios o herramientas, te ofrecemos una gran variedad de productos para que los compres cuando quieras y donde quieras.</p>
+    </div>
+  </div>
+
+  <div class="cartas separadas fade-in">
+    <div class="card1">
+      <header class="card-header has-background-warning">
+        <p class="card-header-title">
+          Valentina M.
+        </p>
+      </header>
+      <div class="card-content">
+        <div class="content">
+          Excelente servicio, mis hijos y yo pasamos muy buenas tardes gracias a la rapida y accesible manera que ofrecen para reservar canchas.
+          Super recomendado.
+        </div>
+      </div>
+    </div>
+
+    <div class="card1">
+      <header class="card-header has-background-warning">
+        <p class="card-header-title">
+          Ricardo P.
+        </p>
+      </header>
+      <div class="card-content">
+        <div class="content">
+          Muy buena pagina, necesitaba comprar rapido una raqueta y encontre una gran variedad de productos y precios. 
+          La entrega fue muy rapida y pese a que hice el pedido temprano logré tener mi producto por la tarde.
+        </div>
+      </div>
+    </div>
+
+    <div class="card1">
+      <header class="card-header has-background-warning">
+        <p class="card-header-title">
+          Susana G.
+        </p>
+      </header>
+      <div class="card-content">
+        <div class="content">
+          Recomendado para cuando necesitan salir del apuro, con unos amigos decidimos jugar y no teniamos cancha,
+          encontre esta pagina y en menos de 5 minutos ya teniamos una cancha reservada. 
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="principal fade-in">
+    <div class="imagen-base" style="margin-left: 4rem">
+      <%= image_tag("chica.svg", alt: "chica jugando padel o tenis") %>
+    </div>
+
+    <div class="columna">
+      <div class="contenido">
+        <h1 style="font-size: 5vh; font-family:sans-serif; color:black"> Creado por y para todo tipo de personas </h1>
+        <p style="font-size: 3vh;"> Las ganas son lo unico que necesitas. </p>
+        <p style="font-size: 3vh;"> Somos mas que solo padel, si necesitas equipamiento, suplementos, accesorios 
+        y cualquier otro tipo de producto para cualquier tipo de deporte lo puedes encontrar directamente con nosotros.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="info_rosada fade-in">
+    <div class="columna">
+      <p class="texto_grande" style="color:black; font-size:4vh; color:black">Puedes saber mas de nosotros o directamente contactarnos!</p>
+    </div>
+    <div class= "botones">
+      <div class="button1">
+        <a class="button is-dark is-large" href="/contacto"> Contacto</a>
+      </div>
+    </div>
+  </div>
+
+  <% unless user_signed_in? %>
+    <div class="info_gris fade-in">
+      <div class="imagen_fondo">
+        <%= image_tag("fondo1.jpg", alt: "Fondo de raquetas de padel y tenis", class: "background_image") %>
+        <div class="button_container">
+          <%= link_to "Regístrate", new_user_registration_path, class: "button is-rounded has-background-white-bis is-large" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+</body>
+
+<script>
+$(window).scroll(function() {
+  $('.fade-in').each(function() {
+    var position = $(this).offset().top;
+    var scrollPosition = $(window).scrollTop() + $(window).height();
+
+    if (scrollPosition > position) {
+      $(this).addClass('visible');
+    }
+  });
+});
+</script>

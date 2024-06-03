@@ -1,0 +1,69 @@
+<head> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <meta charset="utf-8">
+</head>
+
+
+<body>
+    <div class="section">
+        <% if current_user.role == "admin" %>
+            <%= form_for @product, url: {action: "actualizar_producto"}, html: {method: "patch"} do |product_form| %>
+                <!-- Protección CSRF -->
+                <%= token_tag nil %>
+                <div class="columns is-centered">
+                    <div class="column is-half" style= "margin-top: 6rem;">
+                        <% if flash[:error] %>
+                            <div class="notification is-danger">
+                            <%= flash[:error] %>
+                            </div>
+                        <% end %>
+                
+                        <h1 class="title is-1">Actualizar Producto</h1>
+                        <div class="field" >
+                            <label class="label">Nombre</label>
+                            <div class="control">
+                              <%=product_form.text_field :nombre , placeholder: "Nombre", class: "input"%>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Precio</label>
+                            <div class="control">
+                              <%=product_form.text_field :precio , placeholder: "Precio", class: "input"%>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Stock</label>
+                            <div class="control">
+                              <%=product_form.text_field :stock , placeholder: "Stock", class: "input"%>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Imagen</label>
+                            <div class="control">
+                              <%=product_form.file_field :image , html: {:html => {:class => 'input'}}%>
+                            </div>
+                        </div>
+
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button class="button is-primary is-fullwidth">Guardar</button>
+                            </div>
+                            <div class="button is-primary is-danger">
+                                <%= link_to 'Cancelar', url_for(:back), class: "btn btn-warning" %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+          <% end %>
+        <% else %>
+            <div class="notification is-warning">
+                Esta página es exclusiva para administradores.
+            </div>
+        <% end %>
+    </div>
+</body>
+ 

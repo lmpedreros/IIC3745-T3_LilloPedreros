@@ -1,0 +1,55 @@
+<body class="has-background-white-ter">
+    <!-- Comprobar si el usuario está logeado para mostrar su carrito -->
+    <div class="content mt-6 mx-3">
+        <% if user_signed_in? %>
+            <div class="section">
+                <div class="box">
+                    <h1 class="title has-text-centered">Tu carrito de compras</h1>
+                    <% if @shopping_cart.products.count > 0 %>
+                        <table>
+                            <tr>
+                            <th>Producto</th>
+                            <th>Unidades</th>
+                            <th>Precio Total</th>
+                            <th>Acciones</th>
+                            </tr>
+                            <% @shopping_cart.products.each do |product_id, amount| %>
+                                <% product = Product.find_by_id(product_id) %>
+                                <% unless product.present? %>
+                                    <% @shopping_cart.products.delete(product_id) %>
+                                    <% @shopping_cart.update(products: @shopping_cart.products) %>
+                                    <% next %>
+                                <% end %>
+                                <tr>
+                                    <td>
+                                        <p><%= product.nombre %></p>
+                                      <% if product.image.attached? %>
+                                        <p><%= image_tag(product.image, class: "cart_product_image_medium") %></p>
+                                      <% else %>
+                                        <p><%= image_tag("default_product.png", class: "cart_product_image_medium") %></p>
+                                      <% end %>
+                                    </td>
+                                    <td><%= amount %></td>
+                                    <td><%= (product.precio.to_i * amount).to_formatted_s(:currency, locale: :es) %></td>
+                                    <td><%= button_to "Eliminar", "/carro/eliminar_producto/#{product_id}", method: :delete, class: "button is-danger is-inverted is-fullwidth"%></td>
+                                </tr>
+                            <% end %>
+                            <tr>
+                                <td><strong>Total</strong></td>
+                                <td></td>
+                                <td><strong><%= @shopping_cart.precio_total.to_formatted_s(:currency, locale: :es) %></strong></td>
+                        </table>
+                        <p>Total a pagar: <%= @shopping_cart.precio_total.to_formatted_s(:currency, locale: :es) %></p>
+                        <i>(El costo podría variar con el envío)</i>
+                        <p><%= button_to "Proceder al pago", "/carro/detalle", method: :get, class: "button is-primary" %></p>
+                        <p><%= button_to "Vaciar carrito", "/carro/limpiar", method: :delete, class: "button is-danger" %></p>
+                    <% else %>
+                        <p class="has-text-centered has-text-danger">No tienes productos en tu carrito</p>
+                    <% end %>
+                </div>
+            </div>
+        <% else %>
+            <p>Debes iniciar sesión para ver tu carrito de compras</p>
+        <% end %>
+    </div>
+</body>

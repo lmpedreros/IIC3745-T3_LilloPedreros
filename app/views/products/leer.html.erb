@@ -1,0 +1,676 @@
+<head> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/assets/products.css">
+</head>
+
+
+
+<body>
+    <div class="section my-6">
+        <div class="box">
+            <div class="columns is-vcentered">
+                <div class="column">
+                    <p class="title is-4 has-text-primary">¡Aquí tienes un chiste para alegrar tu compra!</p>
+                    <div class="joke-content">
+                        <p class="subtitle is-5"><%= @joke %></p>
+                    </div>
+                </div>
+                <div class="column is-narrow">
+                <span class="icon has-text-info">
+                    <i class="fas fa-laugh-beam fa-3x"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+    <!-- Mostrar errores -->
+    <% if flash[:error] %>
+        <div class="columns is-centered">
+            <div class="column is-three-fifths">
+                <div class="notification is-danger">
+                    <%= flash[:error] %>
+                </div>
+            </div>
+        </div>
+    <% end %>
+
+    <!-- Mostrar producto -->
+    <div class="box mx-6">
+        <div class="columns">
+            <div class="column is-two-thirds">
+                <div class="image-frame">
+                    <% if @product.image.attached? %>
+                        <%= image_tag @product.image, class: "product-img" %>
+                    <% else %>
+                    <%= image_tag("default_product.png", class: "product-img") %>
+                    <% end %>
+                </div>
+            </div>
+            <div class="column is-one-third is-rounded px-1">
+                <div class="box px-5" style= "border-radius: 15px; border: 1px solid #b1b1b1;">
+                    <p class="title is-2"><%= @product.nombre %></p>
+                    <p class="subtitle is-1"> <%= @product.precio.to_i.to_formatted_s(:currency, locale: :es) %></p>
+                    <% if @product.categories == "Cancha" %>
+                        <p class="subtitle is-5">Quedan <%= @product.stock %> reservas disponibles</p>
+                        <% if @horarios.present? %>
+                            <p class="subtitle is-5">Los horarios de reserva disponible son:</p>
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Día</th>
+                                    <th>Hora de inicio</th>
+                                    <th>Hora de fin</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <% @horarios.each do |horario| %>
+                                    <tr>
+                                    <td><%= horario[0] %></td>
+                                    <td><%= horario[1] %></td>
+                                    <td><%= horario[2] %></td>
+                                    </tr>
+                                <% end %>
+                                </tbody>
+                            </table>
+                        <% else %>
+                            <p>No se han especificado horarios concretos de reserva por parte del propietario.</p>
+                        <% end %>
+                    <%else%>
+                        <p class="subtitle is-5">Quedan <%= @product.stock %> unidades disponibles</p>
+                    <%end%>
+                    <% if user_signed_in? %>
+                        <% if current_user.id != @product.user_id %>
+                            <div class="section py-0 px-4">
+                                <% if @product.categories == "Cancha" %>
+                                    <form method="POST" action="/solicitud/insertar" enctype="multipart/form-data">
+                                        <%= hidden_field_tag :product_id, @product.id %>
+                                        <!-- Protección CSRF -->
+                                        <%= token_tag nil %>
+                                        <div class="field has-addons">
+                                            <div class="field">
+                                                <label class="label">Cuantas reservas deseas hacer?</label>
+                                                <p class="control pl-4">
+                                                    <input class="input" type="number" id="quantity" name="solicitud[stock]" min="1" max="100" step="1" value="1" placeholder="1">
+                                                </p>
+                                                <label class="label">Selecciona fecha y hora de reserva</label>
+                                                <div class="control">
+                                                    <input class="input" type="datetime-local" name="solicitud[reservation_datetime]" required>
+                                                </div>
+                                                <p class="control">
+                                                    <button class="button is-primary">Reservar ahora</button>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </form>
+                                <%end%>
+                                <br>
+                                <% if @product.categories != "Cancha"%>
+                                    <!-- Comprar ahora -->
+                                    <form method="POST" action="/carro/comprar_ahora" enctype="multipart/form-data">
+                                        <%= hidden_field_tag :product_id, @product.id %>
+                                        <!-- Protección CSRF -->
+                                        <%= token_tag nil %>
+                                        <div class="field has-addons">
+                                            <p class="control pl-4">
+                                                <input class="input" type="number" id="quantity" name="add[amount]" min="1" max="100" step="1" value="1" placeholder="1">
+                                            </p>
+                                            <p class="control">
+                                                <button class="button is-info">Comprar ahora</button>
+                                            </p>
+                                        </div>
+                                    </form>
+                                    <br>
+                                    <form method="POST" action="/carro/insertar_producto" enctype="multipart/form-data">
+                                        <%= hidden_field_tag :product_id, @product.id %>
+                                        <!-- Protección CSRF -->
+                                        <%= token_tag nil %>
+                                        <div class="field has-addons">
+                                            <p class="control pl-4">
+                                                <input class="input" type="number" id="quantity" name="add[amount]" min="1" max="100" step="1" value="1" placeholder="1">
+                                            </p>
+                                            <p class="control">
+                                                <button class="button is-primary">Añadir al carrito</button>
+                                            </p>
+                                        </div>
+                                    </form>
+                                    <br>
+                                <%end%>
+                                <% if !current_user.deseados.include?(@product.id.to_s) %>
+                                    <form method="POST" action="/products/insert_deseado/<%= @product.id %>" enctype="multipart/form-data" style="padding:1rem;">
+                                        <%= hidden_field_tag :product_id, @product.id %>
+                                        <!-- Protección CSRF -->
+                                        <%= token_tag nil %>
+                                        <div class="field has-addons">
+                                            <button class="button is-warning">
+                                            <span class="icon">
+                                                <i class="fas fa-save"></i>
+                                            </span>
+                                            <span>Guardar en deseados</span>
+                                            </button>                                  
+                                        </div>
+                                    </form>
+                                <% else %>
+                                    <div class="level-item has-text-centered">
+                                        <div class="notification is-warning" style= "border-radius: 5px">
+                                            <p class="text is-size-6">Este producto está en tu lista de deseados</p>
+                                        </div>
+                                    </div>
+                                <% end %>
+                            </div>
+                        <% else %>
+                            <div class="has-text-info has-text-centered">
+                                <br>
+                                <p class="heading is-size-1"> Este producto es tuyo</p>
+                                <br>
+                            </div>
+                        <% end %>
+                    <% else %>
+                        <div class="level-item has-text-centered">
+                            <div class="notification is-warning" style= "border-radius: 15px">
+                                <p class="text is-size-4">Debes iniciar sesión para comprar</p>
+                            </div>
+                        </div>
+                    <% end %>
+                    <div class="level-item has-text-centered pt-5">
+                        <p class="subtitle is-6 has-text-info">Publicado el <%= @product.created_at.strftime("%d/%m/%Y") %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preguntas y respuestas -->
+    <div class="block" style="margin-left: 1rem;">
+        <div style="margin-left: 1rem;">
+            <!-- Formulario para escribir al vendedor -->
+            <h1 class="title is-1">Pregúntale al vendedor</h1>
+            <% if user_signed_in? %>
+                <form method="POST" action="/message/insertar" enctype="multipart/form-data">
+                    <%= hidden_field_tag :product_id, @product.id %>
+                    <!-- Protección CSRF -->
+                    <%= token_tag nil %>
+                    <div class="columns">
+                        <div class="column is-half">
+                            <label class="label">Cuerpo del mensaje</label>
+                            <div class="field", style="display: flex;" >
+                                <div class="control", style="width: 45rem">
+                                <% if @product.categories == "Cancha" %>
+                                    <input class="input" placeholder="Hola, ¿hay disponibilidad para el día 12 de marzo a las 10:00 am?..." type="text" name="message[body]">
+                                <%else%>
+                                    <input class="input" placeholder="Hola, ¿hay stock en color blanco?..." type="text" name="message[body]">
+                                <%end%>
+                                </div>
+                                <div class="control", style="margin-left: 2rem;">
+                                    <button class="button is-primary is-fullwidth">Crear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            <% else %>
+                <!-- Usuario no logeado, debe iniciar sesión primero -->
+                <div class="notification is-warning">
+                    Debes iniciar sesión para realizar preguntas.
+                </div>
+            <% end %>
+            <!-- Mostrar preguntas y respuestas -->
+            <h2 class="title is-2">Preguntas y respuestas</h2>
+            <!-- Funcion para renderizar un mensaje -->
+            <% def render_message(message) %>
+                <% unless @shown_message_ids.include?(message.id) %>
+                    <article class="media">
+                        <figure class="media-left">
+                            <% if message.parent.present? %>
+                                <span class="icon is-large">
+                                    <i class="fas fa-level-up-alt fa-rotate-90 fa-lg has-text-info"></i>
+                                </span>
+                            <% end %>
+                        </figure>
+                        <div class="media-content">
+                            <div class="content ">
+                                <h1>
+                                    <span class="tags has-addons are-medium">
+                                        <% if @product.user_id == message.user_id %>
+                                            <span class="tag is-warning">
+                                                <span class="icon-text">
+                                                    <span class="icon"><i class="fas fa-medal"></i></span>
+                                                    <span>Vendedor</span>
+                                                </span>
+                                            </span>
+                                        <% end %>
+                                        <span class="tag is-info has-text-weight-bold"><%= message.user.name %></span>
+                                        <span class="tag is-light has-text-weight-bold"><%= message.created_at.strftime("%d/%m/%Y") %></span>
+                                    </span>
+                                </h1>
+                                <blockquote><%= message.body %></blockquote>
+                            </div>
+                            <nav class="level is-mobile">
+                                <div class="level-left">
+                                    <div class="buttons is-grouped">
+                                        <% if user_signed_in? &&  current_user.role == 'admin' %>
+                                            <button class="js-modal-trigger button is-primary is-small" data-target="modal-message-response-<%= message.id %>">
+                                                <span class="icon is-small"><i class="fas fa-reply"></i></span>
+                                                <span><strong>Responder pregunta</strong></span>
+                                            </button>
+                                        <% end %>
+                                        <% if user_signed_in? &&  (current_user.id == message.user_id || current_user.role == "admin" )%>
+                                        <%= form_with(url: "/message/eliminar",  method: :delete, multipart: true) do |form|%>
+                                                <%= hidden_field_tag :message_id, message.id %>
+                                                <%= hidden_field_tag :product_id, @product.id %>
+                                                <%= token_tag nil %>
+                                                <div class="field" style="display: flex;">
+                                                    <div class="control" style="margin-left: 2rem;">
+                                                        <button class="button is-danger is-small" onclick="return confirm('¿Estás seguro de que deseas eliminar este comentario?')">
+                                                            <span class="icon is-small"><i class="fas fa-trash"></i></span>
+                                                            <% if current_user.id != message.user_id && current_user.role == "admin" %>
+                                                                <span><strong>Eliminar Comentario (Como administrador)</strong></span>
+                                                            <% else %>
+                                                                <span><strong>Eliminar Comentario</strong></span>
+                                                            <% end %>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            <% end %>
+                                        <% end %>
+                                    </div>
+                                </div>
+                            </nav>
+                            <!-- Mostrar Respuestas -->
+                            <% if message.children&.any? %>
+                                <% message.children.each do |child| %>
+                                    <%= render_message(child) %>
+                                <% end %>
+                            <% end %>
+                        </div>
+                        <!-- Modal para crear respuestas -->
+                        <div id="modal-message-response-<%= message.id %>" class="modal">
+                            <div class="modal-background">
+                            </div>
+                            <div class="modal-content">
+                                <%= form_with url: "/message/insertar", method: :post do |form| %>
+                                    <div class="field">
+                                        <%= form.label :body, 'Tu respuesta', class: 'is-size-1 has-text-primary' %>
+                                        <%= form.text_field :body, class: 'input', name: 'message[body]' %>
+                                    </div>
+                                    <%= form.hidden_field :ancestry, value: message.id %>
+                                    <%= form.hidden_field :product_id, value: @product.id %>
+                                    <%= form.submit 'Enviar respuesta', class: 'button is-primary' %>
+                                <% end %>
+                            </div>
+                            <button class="modal-close is-large" aria-label="close"></button>
+                        </div>
+                        <!-- Incluir en mensajes ya mostrados -->
+                        <% @shown_message_ids << message.id %>
+                    </article>
+                <% end %>
+                <% return %>
+            <% end %>
+
+            <% @messages.each do |message| %>
+                <!-- Renderizar mensaje -->
+                <%= render_message(message) %>
+            <% end %>
+        </div>
+    </div>
+
+    <!-- Reseñas del producto -->
+    <div class="block mr-2" style="margin-left: 2rem;">
+        <h2 class="title is-2">Reseñas</h2>
+
+        <!-- Modal para crear reseña -->
+        <div id="modal-crear-resena" class="modal">
+            <div class="modal-background">
+            </div>
+            <% if user_signed_in? %>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Crear una reseña</p>
+                        <button class="delete" aria-label="close"></button>
+                    </header>
+                    <section class="modal-card-body">
+                        <form method="POST" action="/review/insertar" enctype="multipart/form-data" onsubmit="return validarNuevaReview()">
+                            <%= hidden_field_tag :product_id, @product.id %>
+                            <!-- Protección CSRF -->
+                            <%= token_tag nil %>
+                            <!-- Cuerpo del formulario -->
+                            <div class="columns is-vcentered is-centered">
+                                <div class="column is-full">
+                                    <% if flash[:error] %>
+                                        <div class="notification is-danger">
+                                            <%= flash[:error] %>
+                                        </div>
+                                    <% end %>
+
+                                    <div class="field" >
+                                        <label class="label">Título</label>
+                                        <div class="control">
+                                            <input class="input" placeholder="Muy recomendado" type="text" name="tittle" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Descripción</label>
+                                        <div class="control">
+                                            <textarea class="textarea is-primary" placeholder="Recomiendo esto porque..." name="description" required></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Calificación</label>
+                                        <span class="tag is-link">
+                                            <div class="rating">
+                                                <span class="icon" onclick="rate(1)" id="star1"><i class="fas fa-star"></i></span>
+                                                <span class="icon" onclick="rate(2)" id="star2"><i class="fas fa-star"></i></span>
+                                                <span class="icon" onclick="rate(3)" id="star3"><i class="fas fa-star"></i></span>
+                                                <span class="icon" onclick="rate(4)" id="star4"><i class="fas fa-star"></i></span>
+                                                <span class="icon" onclick="rate(5)" id="star5"><i class="fas fa-star"></i></span>
+                                            </div>
+                                        </span>
+                                        <input type="hidden" name="calification" id="calification" value="" required>
+                                    </div>
+
+                                    <div class="field is-grouped">
+                                        <div class="control">
+                                            <button type="submit" class="button is-primary is-fullwidth">Crear</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button">Cancelar</button>
+                    </footer>
+                </div>
+            <% else %>
+                <!-- Usuario no logeado, debe iniciar sesión primero -->
+                <div class="modal-content">
+                    <div class="notification is-danger">
+                        Debes iniciar sesión para dejar una reseña.
+                    </div>
+                </div>
+            <% end %>
+            <button class="modal-close is-large" aria-label="close"></button>
+        </div>
+
+        <!-- Mostrar reseñas del producto -->
+        <div class="box">
+            <div class="columns is-vcentered">
+                <!-- Columna de puntuacion general -->
+                <div class="column is-one-fifth has-text-centered">
+                    <div class="box">
+                        <% if not @reviews.empty? %>
+                            <span class="tag is-warning">
+                                <% for i in 0..4 do %>
+                                    <% if i < @calification_mean.to_i %>
+                                        <span class="icon"><i class="fas fa-star has-text-danger"></i></span>
+                                    <% else %>
+                                        <span class="icon"><i class="fas fa-star has-text-dark"></i></span>
+                                    <% end %>
+                                <% end %>
+                            </span>
+                            <br>
+                            <h2>Calificación promedio</h2>
+                            <h1 class="title is-1"><%= @calification_mean.to_s %></h1>
+                        <% else %>
+                            <span class="tag is-warning">
+                                <% for i in 0..4 do %>
+                                    <span class="icon"><i class="fas fa-star has-text-dark"></i></span>
+                                <% end %>
+                            </span>
+                            <% if @product.categories != "Cancha"%>
+                                <p class="has-text-weight-bold">Este producto todavía no tiene reseñas.</p>
+                            <% else %>
+                                <p class="has-text-weight-bold">Esta cancha todavía no tiene reseñas.</p>
+                            <% end %>
+                        <% end %>
+                        <!-- Boton para abrir modal de crear reseña -->
+                        <button class="button is-primary js-modal-trigger" data-target="modal-crear-resena">
+                            <span class="icon is-small"><i class="fas fa-plus"></i></span>
+                            <span>Dejar una reseña</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Mostrar reseñas existentes -->
+                <div class="column is-four-fifths">
+                    <% if not @reviews.empty? %>
+                        <% @reviews.each do |review| %>
+                            <!-- Separador -->
+                            <hr class="is-divider">
+                            <!-- Modal para editar reseña -->
+                            <div id="modal-editar-resena<%=review.id%>" class="modal">
+                                <div class="modal-background">
+                                </div>
+                                <% if user_signed_in? %>
+                                    <div class="modal-card">
+                                        <header class="modal-card-head">
+                                            <p class="modal-card-title">Editar reseña</p>
+                                            <button class="delete" aria-label="close"></button>
+                                        </header>
+                                        <section class="modal-card-body">
+                                          <%= form_with(url: "/review/actualizar/#{review.id}",  method: :patch, multipart: true, html: {onsubmit: "return validarEditarReview(#{review.id})"}) do |form|%>
+                                                <!-- Protección CSRF -->
+                                                <%= token_tag nil %>
+                                                <!-- Cuerpo del formulario -->
+                                                <div class="columns is-centered">
+                                                    <div class="column is-full">
+                                                        <% if flash[:error] %>
+                                                            <div class="notification is-danger">
+                                                                <%= flash[:error] %>
+                                                            </div>
+                                                        <% end %>
+
+                                                        <div class="field" >
+                                                            <label class="label">Título</label>
+                                                            <div class="control">
+                                                                <input class="input" type="text" name="tittle" value="<%= review.tittle %>" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="field">
+                                                            <label class="label">Descripción</label>
+                                                            <div class="control">
+                                                                <textarea class="textarea is-primary" name="description" required><%= review.description %></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="field">
+                                                            <label class="label">Calificación</label>
+                                                            <span class="tag is-link">
+                                                                <div class="rating">
+                                                                    <% for i in 1..5 do %>
+                                                                        <% if i <= review.calification.to_i %>
+                                                                            <span class="icon has-text-warning" onclick="rateEdit(<%=i%>, <%=review.id%>)" id="star<%=review.id%><%=i%>"><i class="fas fa-star"></i></span>
+                                                                        <% else %>
+                                                                            <span class="icon" onclick="rateEdit(<%=i%>, <%=review.id%>)" id="star<%=review.id%><%=i%>"><i class="fas fa-star"></i></span>
+                                                                        <% end %>
+                                                                    <% end %>
+                                                                </div>
+                                                            </span>
+                                                            <input type="hidden" name="calification" id="calification_edit<%=review.id%>" value="<%=review.calification%>">
+                                                        </div>
+
+                                                        <div class="field is-grouped">
+                                                            <div class="control">
+                                                                <button type="submit" class="button is-primary is-fullwidth">Actualizar reseña</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                          <% end %>
+                                        </section>
+                                        <footer class="modal-card-foot">
+                                            <button class="button">Cancelar</button>
+                                        </footer>
+                                    </div>
+                                <% else %>
+                                    <!-- Usuario no logeado, debe iniciar sesión primero -->
+                                    <div class="modal-content">
+                                        <div class="notification is-danger">
+                                            Debes iniciar sesión para dejar una reseña.
+                                        </div>
+                                    </div>
+                                <% end %>
+                                <button class="modal-close is-large" aria-label="close"></button>
+                            </div>
+                            <!-- Contenido de reseña -->
+                            <article class="media my-2">
+                                <figure class="media-left">
+                                    <br>
+                                    <h1 class="title"><%= review.calification %>/5</h1>
+                                </figure>
+                                <div class="media-content">
+                                    <div class="content">
+                                        <p>
+                                            <span class="tag is-link">
+                                                <% for i in 0..4 do %>
+                                                    <% if i < review.calification.to_i %>
+                                                        <span class="icon"><i class="fas fa-star has-text-warning"></i></span>
+                                                    <% else %>
+                                                        <span class="icon"><i class="fas fa-star"></i></span>
+                                                    <% end %>
+                                                <% end %>
+                                            </span>
+                                            <strong><%= review.tittle %></strong>
+                                            <br>
+                                            <%= review.description %>
+                                        </p>
+                                    </div>
+                                    <nav class="level is-mobile">
+                                        <div class="level-left">
+                                            <% if can? :actualizar, review %>
+                                                <!-- Boton para abrir modal de editar reseña -->
+                                                <button class="button is-warning is-small mr-2 js-modal-trigger" data-target="modal-editar-resena<%=review.id%>">
+                                                    <span class="icon is-small"><i class="fas fa-edit"></i></span>
+                                                    <span>Editar reseña</span>
+                                                </button>
+                                            <% end %>
+                                            <% if can? :eliminar, review %>
+                                                <%= button_to({controller: "review", action: "eliminar", id: review.id }, method: :delete, onclick: "return ConfirmDeleteReview()", class: "button is-danger is-small") do %>
+                                                    <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
+                                                    <span>Eliminar reseña</span>
+                                                <% end %>
+                                            <% end %>
+                                        </div>
+                                    </nav>
+                                </div>
+                                <div class="media-right">
+                                    <p>Modificado por última vez: <%= review.updated_at.strftime("%d/%m/%Y") %></p>
+                                </div>
+                            </article>
+                        <% end %>
+                    <% else %>
+                        <div class="notification is-info">
+                            No existen reseñas para mostrar.
+                        </div>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Scripts de la página -->
+    <script>
+        // Confirmar eliminacion de reseña
+        function ConfirmDeleteReview() {
+            return confirm("¿Estás seguro de que deseas eliminar esta reseña?");
+        }
+        // Script para botones de Modal
+        document.addEventListener('DOMContentLoaded', () => {
+            // Functions to open and close a modal
+            function openModal($el) {
+                $el.classList.add('is-active');
+            }
+
+            function closeModal($el) {
+                $el.classList.remove('is-active');
+            }
+
+            function closeAllModals() {
+                (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+                closeModal($modal);
+                });
+            }
+
+            // Add a click event on buttons to open a specific modal
+            (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
+                const modal = $trigger.dataset.target;
+                const $target = document.getElementById(modal);
+
+                $trigger.addEventListener('click', () => {
+                openModal($target);
+                });
+            });
+
+            // Add a click event on various child elements to close the parent modal
+            (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+                const $target = $close.closest('.modal');
+
+                $close.addEventListener('click', () => {
+                closeModal($target);
+                });
+            });
+
+            // Add a keyboard event to close all modals
+            document.addEventListener('keydown', (event) => {
+                const e = event || window.event;
+
+                if (e.keyCode === 27) { // Escape key
+                closeAllModals();
+                }
+            });
+        });
+        // Puntuacion de estrellas
+        function rate(rating) {
+            const stars = document.querySelectorAll('.icon');
+            stars.forEach(function(star) {
+                star.classList.remove('has-text-warning');
+            });
+
+            for (let i = 1; i <= rating; i++) {
+                const star = document.querySelector('#star' + i);
+                star.classList.add('has-text-warning');
+            }
+            const calificationField = document.querySelector('#calification');
+            calificationField.value = rating;
+        }
+        function rateEdit(rating, review_id) {
+            const stars = document.querySelectorAll('.icon');
+            stars.forEach(function(star) {
+                star.classList.remove('has-text-warning');
+            });
+
+            for (let i = 1; i <= rating; i++) {
+                const star = document.querySelector('#star' + review_id + i);
+                star.classList.add('has-text-warning');
+            }
+            const calificationField = document.querySelector('#calification_edit' + review_id);
+            calificationField.value = rating;
+        }
+        // Validaciones de formulario
+        function validarNuevaReview() {
+            var hiddenField = document.getElementById("calification").value;
+            if (hiddenField === "") {
+                alert("No has seleccionado una calificación.");
+                return false; // Evita el envío del formulario
+            }
+            return true;
+        }
+        function validarEditarReview(review_id) {
+            var hiddenField = document.getElementById("calification_edit" + review_id).value;
+            if (hiddenField === "") {
+                alert("No has seleccionado una calificación.");
+                return false; // Evita el envío del formulario
+            }
+            return true;
+        }
+    </script>
+    </div>
+    </div>
+</body>
+
+

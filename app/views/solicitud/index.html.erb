@@ -1,0 +1,244 @@
+<head> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <meta charset="utf-8">
+</head>
+
+
+
+<body class="has-background-white-ter">
+    <div class="section">
+        <div style="margin-top: 1rem; margin-left: 1rem;">
+            <div class="content">
+                <p class="content is-large"> <b> Mis solicitudes de reserva y compra pendientes </b> </p>
+            </div>
+            <% if @solicitudes.count == 0 %>
+                <p class="content is-large has-text-info"> No tienes solicitudes, prueba comprar o reservar algo! </p>
+                <br>
+            <% end %>
+            <% @solicitudes.each do |solicitud| %>
+                <% product = Product.find(solicitud.product_id) %>
+                <% if solicitud.status == "Pendiente" %>
+                    <div class="card">
+                        <header class="card-header has-background-warning">
+                            <p class="card-header-title"><%= solicitud.created_at.strftime("%d/%m/%Y") %></p>
+                        </header>
+                        <div class="columns">
+                            <div class="column is-one-fifth">
+                                <div class="image-frame">
+                                    <% if product.image.attached? %>
+                                        <%= image_tag product.image, class: "product-img" %>
+                                  <% else %>
+                                    <%= image_tag("default_product.png", class: "product-img") %>
+                                    <% end %>
+
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="card-content">
+                                    <div class="content is-medium">
+                                        <%if product.categories == "Cancha" %>
+                                            <p> Solicitud de reserva para la cancha: <%= product.nombre %></p>
+                                            <p> Cantidad solicitada <%= solicitud.stock %></p>
+                                            <p> Solicitante: <%= User.find(solicitud.user_id).name %></p>
+                                            <p> <%= solicitud.reservation_info %></p>
+                                        <% else %>
+                                            <p> Solicitud de compra para el producto: <%= product.nombre %></p>
+                                            <p> Cantidad solicitada <%= solicitud.stock %></p>
+                                            <p> Solicitante: <%= User.find(solicitud.user_id).name %></p>
+                                        <% end %>
+                                        <% if can? :eliminar, solicitud %>
+                                            <div>
+                                              <%= form_with(url: "/solicitud/eliminar/#{solicitud.id}",  method: :delete, class: "form-horizontal", html:{onsubmit: "return ConfirmDelete()"}) do |form|%>
+                                                    <%= token_tag nil %> <!-- Protección CSRF -->
+                                                    <button type="submit" class="card-footer-item button is-danger">Cancelar solicitud</button>
+                                                <% end %>
+                                            </div>
+                                        <% end %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% end %>
+                <br>
+            <% end %>
+        </div>
+        <br>
+        <div style="margin-top: 1rem; margin-left: 1rem;">
+            <div class="content">
+                <p class="content is-large"> <b> Mis solicitudes de reserva y compra Aprobadas </b> </p>
+                <br>
+            </div>
+            <% if @solicitudes.count == 0 %>
+                <p class="content is-large has-text-info"> No tienes solicitudes, prueba a reservar o comprar algo! </p>
+                <br>
+            <% end %>
+            <% @solicitudes.each do |solicitud| %>
+                <% product = Product.find(solicitud.product_id) %>
+                <% if solicitud.status == "Aprobada" %>
+                    <div class="card">
+                        <header class="card-header has-background-success">
+                            <p class="card-header-title"><%= solicitud.created_at.strftime("%d/%m/%Y") %></p>
+                        </header>
+                        <div class="columns">
+                            <div class="column is-one-fifth">
+                                <div class="image-frame">
+                                    <% if product.image.attached? %>
+                                        <%= image_tag product.image, class: "product-img" %>
+                                    <% end %>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="card-content">
+                                    <%if product.categories == "Cancha" %>
+                                        <div class="content is-medium">
+                                            <p> Solicitud de reserva para la cancha: <%= product.nombre %></p>
+                                            <p> Cantidad solicitada <%= solicitud.stock %></p>
+                                            <p> Solicitante: <%= User.find(solicitud.user_id).name %></p>
+                                            <p> <%= solicitud.reservation_info %></p>
+                                        </div>
+                                    <% else %>
+                                        <div class="content is-medium">
+                                            <p> Solicitud de compra para el producto: <%= product.nombre %></p>
+                                            <p> Cantidad solicitada <%= solicitud.stock %></p>
+                                            <p> Solicitante: <%= User.find(solicitud.user_id).name %></p>
+                                        </div>
+                                    <% end %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% end %>
+                <br>
+            <% end %>
+        </div>
+        <% if current_user.role == 'admin'%>
+            <div style="margin-top: 1rem; margin-left: 1rem;">
+                <div class="content">
+                    <p class="content is-large"> <b>Mis solicitudes de venta pendientes</b> </p>
+                    <br>
+                </div>
+                <% if @productos.count == 0 %>
+                    <p class="content is-large has-text-info"> No tienes canchas disponibles o productos a la venta, prueba a crear uno! </p>
+                    <br>
+                <% end %>
+                <% @productos.each do |product| %>
+                    <% solicitudes = Solicitud.where(product_id: product.id) %>
+                    <% solicitudes.each do |solicitud| %>
+                        <% product = Product.find(solicitud.product_id) %>
+                        <% if solicitud.status == "Pendiente" %>
+                            <div class="card">
+                                <header class="card-header has-background-info">
+                                    <p class="card-header-title"><%= solicitud.created_at.strftime("%d/%m/%Y") %></p>
+                                </header>
+                                <div class="columns">
+                                    <div class="column is-one-fifth">
+                                        <div class="image-frame">
+                                            <% if product.image.attached? %>
+                                                <%= image_tag product.image, class: "product-img" %>
+                                            <% end %>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                        <div class="card-content">
+                                            <div class="content is-medium">
+                                                <%if product.categories == "Cancha" %>
+                                                    <p> Solicitud de reserva para la cancha: <%= product.nombre %></p>
+                                                    <p> Cantidad solicitada <%= solicitud.stock %></p>
+                                                    <p> Solicitante: <%= User.find(solicitud.user_id).name %></p>
+                                                    <p> <%= solicitud.reservation_info %></p>
+                                                <% else %>
+                                                    <p> Solicitud de compra para el producto: <%= product.nombre %></p>
+                                                    <p> Cantidad solicitada <%= solicitud.stock %></p>
+                                                    <p> Solicitante: <%= User.find(solicitud.user_id).name %></p>
+                                                <% end %>
+                                                <div class="field is-grouped">
+                                                    <% if can? :eliminar, solicitud %>
+                                                    <%= form_with(url: "/solicitud/eliminar/#{solicitud.id}",  method: :delete, class: "form-horizontal", html:{onsubmit: "return ConfirmDelete()"}) do |form|%>
+                                                            <%= token_tag nil %> <!-- Protección CSRF -->
+                                                            <button type="submit" class="card-footer-item button is-danger">Rechazar solicitud</button>
+                                                      <% end %>
+                                                    <% end %>
+                                                    <% if can? :actualizar, solicitud %>
+                                                    <%= form_with(url: "/solicitud/actualizar/#{solicitud.id}",  method: :patch, class: "form-horizontal", html:{onsubmit: "return ConfirmUpdate()"}) do |form|%>
+                                                            <%= token_tag nil %> <!-- Protección CSRF -->
+                                                            <button type="submit" class="card-footer-item button is-primary">Aceptar solicitud</button>
+                                                        </form>
+                                                      <%end %>
+                                                    <% end %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            </div>
+            <div style="margin-top: 1rem; margin-left: 1rem;">
+                <div class="content">
+                    <p class="content is-large"> <b>Mis solicitudes de venta aprobadas </b> </p>
+                    <br>
+                </div>
+                <% if @productos.count == 0 %>
+                    <p class="content is-large has-text-info"> No tienes canchas disponibles o productos a la venta, prueba a crear uno! </p>
+                    <br>
+                <% end %>
+                <% @productos.each do |product| %>
+                    <% solicitudes = Solicitud.where(product_id: product.id) %>
+                    <% solicitudes.each do |solicitud| %>
+                        <% product = Product.find(solicitud.product_id) %>
+                        <% if solicitud.status == "Aprobada" %>
+                            <div class="card">
+                                <header class="card-header has-background-info">
+                                    <p class="card-header-title"><%= solicitud.created_at.strftime("%d/%m/%Y") %></p>
+                                </header>
+                                <div class="columns">
+                                    <div class="column is-one-fifth">
+                                        <div class="image-frame">
+                                            <% if product.image.attached? %>
+                                                <%= image_tag product.image, class: "product-img" %>
+                                            <% end %>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                        <div class="card-content">
+                                            <%if product.categories == "Cancha" %>
+                                                <div class="content is-medium">
+                                                    <p> Solicitud de reserva para la cancha: <%= product.nombre %></p>
+                                                    <p> Cantidad solicitada <%= solicitud.stock %></p>
+                                                    <p> Solicitante: <%= User.find(solicitud.user_id).name %></p>
+                                                    <p> <%= solicitud.reservation_info %></p>
+                                                </div>
+                                            <% else %>
+                                                <div class="content is-medium">
+                                                    <p> Solicitud de compra para el producto: <%= product.nombre %></p>
+                                                    <p> Cantidad solicitada <%= solicitud.stock %></p>
+                                                    <p> Solicitante: <%= User.find(solicitud.user_id).name %></p>
+                                                </div>
+                                            <% end %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            </div>
+        <%end%>
+    </div>
+</body>
+
+
+<script>
+    function ConfirmDelete() {
+        return confirm("¿Estás seguro de que deseas eliminar esta solicitud?");
+    }
+    function ConfirmUpdate() {
+        return confirm("¿Estás seguro de que deseas aceptar esta solicitud?");
+    }
+</script>

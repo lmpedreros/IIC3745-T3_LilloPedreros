@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script defer src= "https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+    <title>Padel y accesorios</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <header>
+      <nav class="navbar is-fixed-top is-info" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarPrincipal">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+
+        <div id="navbarPrincipal" class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="/">
+              Inicio
+            </a>
+
+
+            <div class="navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link" href="/products/index">Productos</a>
+              <div class="navbar-dropdown is-left">
+                <a class="navbar-item" href="/products/index">Ver canchas y productos</a>
+                <% if user_signed_in? && current_user.role == "admin" %>
+                  <hr class="navbar-divider has-background-info-light">
+                  <a class="navbar-item has-text-success" href="/products/crear">Crear producto</a>
+                <% end %>
+              </div>
+            </div>
+
+            <a class="navbar-item" href="/contacto">
+              Contacto
+            </a>
+            
+          </div>
+          <!-- Información de usuario logeado -->
+          <div class="navbar-end">
+            <% if user_signed_in? %>
+              <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link" href="/carro">
+                    <%= image_tag('cart-shopping-solid.svg', alt: 'Imagen carro', class: 'icon') %>
+                  <h1 class="px-2">Mi carrito</h1>
+                </a>
+                <!-- Comprobamos si el usuario tiene un carro -->
+                <% if ShoppingCart.find_by(user_id: current_user.id).present? %>
+                  <!-- Mostramos un menu expandible con el carro que tiene un icono de un carro con el numero de productos en el carro -->
+                  <div class="navbar-dropdown is-right">
+                    <!-- Mostramos los productos que tiene el carro -->
+                    <% ShoppingCart.find_by(user_id: current_user.id).products.each do |product_id, amount| %>
+                      <% product = Product.find_by_id(product_id) %>
+                      <% unless product.present? %>
+                        <% ShoppingCart.find_by(user_id: current_user.id).products.delete(product_id) %>
+                        <% next %>
+                      <% end %>
+                      <div class="navbar-item">
+                        <div class="columns">
+                          <div class="column is-2">
+                            <% if product.image.attached? %>
+                              <%= image_tag(product.image, class: "navbar-product-icon") %>
+                            <% else %>
+                              <%= image_tag("default_product.png", class: "navbar-product-icon") %>
+                            <% end %>
+                          </div>
+                          <div class="column is-6">
+                            <p class="has-text-weight-bold"><%= amount %> x <%= product.nombre.truncate(16) %></p>
+                            <p class="has-text-weight-bold"><%= (product.precio.to_i * amount).to_formatted_s(:currency, locale: :es) %></p>
+                          </div>
+                          <div class="column is-4">
+                            <%= button_to "Eliminar", "/carro/eliminar_producto/#{product.id}", method: :delete, class: "button is-danger is-inverted is-fullwidth"%>
+                          </div>
+                        </div>
+                      </div>
+                    <% end %>
+                    <hr class="navbar-divider has-background-danger-light">
+                    <%= button_to "Ver carrito", "/carro", method: :get, class: "button is-info is-inverted is-fullwidth" %>
+                    <%= button_to "Ir a pagar", "/carro/detalle", method: :get, class: "button is-primary is-inverted is-fullwidth" %>
+                  </div>
+                <% end %>
+              </div>
+
+              <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link" href="/users/show">
+                  <% if current_user.image.attached? %>
+                    <%= image_tag(current_user.image, class: 'navbar-profile-icon')%>
+                  <% else %>
+                    <%= image_tag('default_user.png', alt: 'Imagen predeterminada de usuario', class: 'navbar-profile-icon') %>
+                  <% end %>
+                  <h1 class="px-2">Mi cuenta</h1>
+                </a>
+
+                <div class="navbar-dropdown is-right">
+                  <%= link_to "Mi perfil", "/users/show", class: "navbar-item has-text-info is-size-6" %>
+                  <%= link_to "Solicitudes de compra y reserva", "/solicitud/index", class: "navbar-item has-text-info is-size-6" %>
+                  <%= link_to "Lista de deseos", "/users/deseados", class: "navbar-item has-text-info is-size-6" %>
+                  <%= link_to "Mis mensajes", "/users/mensajes", class: "navbar-item has-text-info is-size-6" %>
+                  <hr class="navbar-divider has-background-danger-light">
+                  <%= button_to "Cerrar Sesión", destroy_user_session_path, method: :delete, class: 'navbar-item button is-danger is-inverted is-fullwidth'%>
+                </div>
+              </div>
+            <% else %>
+              <div class="navbar-item">
+                <div class="buttons">
+                  <%= link_to "Iniciar Sesión", new_user_session_path, class: "button is-primary"%>
+                  <%= link_to "Regístrate", new_user_registration_path, class: "button is-light" %>
+                </div>
+              </div>
+            <% end %>
+        
+          </div>
+
+        </div>
+      </nav>
+    </header>
+    <% if flash[:notice] %>
+      <div class="navbar-notification">
+        <div class="notification is-success has-text-centered is-small">
+          <button class="delete"></button>
+          <%= flash[:notice] %>
+        </div>
+      </div>
+    <% elsif flash[:alert] %>
+      <div class="navbar-notification">
+        <div class="notification is-warning has-text-centered is-small">
+          <button class="delete"></button>
+          <%= flash[:alert] %>
+        </div>
+      </div>
+    <% end %>
+
+    <script>
+      document.addEventListener('turbo:load', () => {
+      (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+        const $notification = $delete.parentNode;
+
+        $delete.addEventListener('click', () => {
+          $notification.parentNode.removeChild($notification);
+        });
+      });
+    });
+    </script>
+  </body>
+  <%= yield %>
+</html>

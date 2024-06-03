@@ -1,0 +1,70 @@
+<div class="columns is-centered">
+  <div class="column is-half" style= "margin-top: 6rem;">
+    <h2 class="title is-2 has-text-centered">Registro</h2>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+      <% if resource.errors.any? %>
+        <div class="field">
+          <div class="notification is-danger">
+            <%= render "devise/shared/error_messages", resource: resource %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="field">
+        <label class="label">Correo electrónico</label>
+        <div class="control has-icons-left">
+          <%= f.email_field :email, class: 'input', autofocus: true, autocomplete: "email", placeholder: "hola@mail.cl", required: true %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-envelope"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= f.label :name, "Nombre", class: "label" %>
+        <div class="control has-icons-left">
+          <%= f.text_field :name, class: 'input', required: true %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-user"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Contraseña</label>
+        <div class="control has-icons-left">
+          <%= f.password_field :password, class: 'input', autocomplete: "new-password", required: true %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-lock"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Confirmar contraseña</label>
+        <div class="control has-icons-left">
+          <%= f.password_field :password_confirmation, class: 'input', autocomplete: "new-password", required: true %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-lock"></i>
+          </span>
+        </div>
+      </div>
+      <div class="field">
+        <%= f.label :name, "Si desea registrarse como admin escriba el codigo secreto: ", class: "label" %>
+        <div class="control has-icons-left">
+          <%= f.text_field :role, class: 'input', value: ''%>
+          <span class="icon is-small is-left">
+            <i class="fas fa-user"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= f.submit "Registrarse", class: "button is-primary is-fullwidth" %>
+      </div>
+    <% end %>
+
+    <%= render "devise/shared/links" %>
+  </div>
+</div>

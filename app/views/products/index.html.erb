@@ -1,0 +1,94 @@
+<head> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/assets/products.css">
+    <style>
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="section my-6">
+        <h1 class="title is-1 has-text-centered">Canchas y productos</h1>
+        <div class="form-container">
+            <%= form_tag("/products/index", method: 'get', class: 'is-flex is-justify-content-center') do %>
+                <div class="field">
+                <div class="select is-primary">
+                    <%= select_tag(:category, options_for_select(["Cancha", "Accesorio tecnologico", "Accesorio deportivo", "Accesorio de vestir", "Accesorio de entrenamiento", "Suplementos", "Equipamiento"], params[:category]), prompt: "Todas las categorías") %>
+                </div>
+                <%= submit_tag('Filtrar por categoria', class: 'button is-primary') %>
+                </div>
+            <% end %>
+            <%= form_tag("/products/index", method: 'get', class: 'is-flex is-justify-content-end') do %>
+                <div class="field has-addons">
+                <div class="control">
+                    <%= text_field_tag(:search, params[:search], class: 'input', placeholder: 'Buscar por nombre') %>
+                </div>
+                <div class="control">
+                    <%= submit_tag('Buscar', class: 'button is-primary') %>
+                </div>
+                </div>
+            <% end %>
+        </div>
+        <div class="columns is-centered is-multiline" style="margin-top: 1rem">
+            <% if @products.empty? && params[:search].present? %>
+                <p>No se encontraron productos con el nombre "<%= params[:search] %>".</p>
+            <% end %>
+            <% @products.each do |product| %>
+                <% if product.stock.to_i > 0 or (current_user && current_user.role == "admin")%>
+                    <div class="column is-one-third">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">
+                                    <%= product.nombre %>
+                                </p>
+                            </header>
+                            <div class="card-content">
+                                <div class="index-image-frame">
+                                    <% if product.image.attached? %>
+                                        <%= image_tag product.image %>
+                                    <%else %>
+                                    <%= image_tag("default_product.png") %>
+                                    <% end %>
+                                </div>
+                                <div class="content" style="color: black">
+                                    Precio del producto: <%= product.precio.to_i.to_formatted_s(:currency, locale: :es) %>
+                                    <br> Stock disponible: <%= product.stock %>
+                                    <br> Categoria: <%= product.categories %>
+                                </div>
+                            </div>
+            
+                            <footer class="card-footer">
+                                <a href="/products/leer/<%= product.id %>" class="card-footer-item">Detalles</a>
+                                
+                                <% if can? :actualizar, product %>
+                                    <a href="/products/actualizar/<%= product.id %>" class="card-footer-item">Editar</a>
+                                <% end %>
+                                
+                                <% if can? :eliminar, product %>
+                                <%= form_with(url: "/products/eliminar/#{product.id}",  method: :delete, html: {class: "form-horizontal",onsubmit: "return ConfirmDelete()"}) do |form|%>
+                                        <%= token_tag nil %> <!-- Protección CSRF -->
+                                        <button type="submit" class="card-footer-item">Eliminar</button>
+                                  <% end %>
+                                <% end %>
+                            </footer>
+            
+                        </div>
+                    </div>
+                <% end %>
+            <% end %>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    function ConfirmDelete() {
+        return confirm("¿Estás seguro de que deseas eliminar este producto?");
+    }
+</script>
