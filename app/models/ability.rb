@@ -63,7 +63,6 @@ class Ability
     can %i[index leer], Review
     can [:leer], Message
 
-
     # Define abilities for the user here. For example:
     #
     #   return unless user.present?

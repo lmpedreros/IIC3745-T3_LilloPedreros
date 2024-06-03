@@ -166,7 +166,6 @@ class ShoppingCartController < ApplicationController
     shopping_cart.products = {}
     return shopping_cart if shopping_cart.save
 
-
     flash[:alert] = 'Hubo un error al crear el carro. Contacte un administrador.'
     redirect_to :root
   end
