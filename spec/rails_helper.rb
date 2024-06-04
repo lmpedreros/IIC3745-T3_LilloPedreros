@@ -68,6 +68,22 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
   config.before(:each, type: :system) do
-    driven_by :selenium_chrome
+    driven_by :selenium_chrome_headless
   end
+
+  Capybara.register_driver :selenium_chrome_headless do |app|
+    options = Selenium::WebDriver::Chrome::Options.new
+  
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+  
+    client = Selenium::WebDriver::Remote::Http::Default.new
+    client.read_timeout = 120 # seconds
+  
+    Capybara::Selenium::Driver.new(app, browser: :chrome, options: options, http_client: client)
+  end
+  
+  Capybara.javascript_driver = :selenium_chrome_headless
+
 end
