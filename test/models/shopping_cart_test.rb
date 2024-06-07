@@ -1,44 +1,40 @@
-# spec/models/shopping_cart_spec.rb
-require_relative '../../spec/rails_helper'
+require 'test_helper'
 
-RSpec.describe ShoppingCart, type: :model do
-  let(:user) { User.create(email: 'test@example.com', password: 'password') }
-  let(:product1) { Product.create(name: 'Product 1', price: 1000) }
-  let(:product2) { Product.create(name: 'Product 2', price: 2000) }
-
-  describe 'validations' do
-    it 'is valid with valid attributes' do
-      shopping_cart = ShoppingCart.new(user: user, products: { product1.id.to_s => 2, product2.id.to_s => 1 })
-      expect(shopping_cart).to be_valid
-    end
-
-    it 'is not valid without a user' do
-      shopping_cart = ShoppingCart.new(products: { product1.id.to_s => 2, product2.id.to_s => 1 })
-      expect(shopping_cart).to_not be_valid
-    end
+class ShoppingCartTest < ActiveSupport::TestCase
+  def setup
+    @user = User.create!(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
+    @product1 = Product.create!(nombre: 'Product1', precio: 1000, stock: 10, user: @user, categories: 'Cancha')
+    @product2 = Product.create!(nombre: 'Product2', precio: 2000, stock: 5, user: @user, categories: 'Accesorio tecnologico')
+    @shopping_cart = ShoppingCart.new(user: @user, products: {@product1.id => 2, @product2.id => 1})
   end
 
-  describe '#precio_total' do
-    it 'calculates the total price of products in the shopping cart' do
-      shopping_cart = ShoppingCart.create(user: user, products: { product1.id.to_s => 2, product2.id.to_s => 1 })
-      expect(shopping_cart.precio_total).to eq(4000)
-    end
-
-    it 'returns 0 if the shopping cart is empty' do
-      shopping_cart = ShoppingCart.create(user: user, products: {})
-      expect(shopping_cart.precio_total).to eq(0)
-    end
+  test 'is valid with valid attributes' do
+    assert @shopping_cart.valid?
   end
 
-  describe '#costo_envio' do
-    it 'calculates the shipping cost for the shopping cart' do
-      shopping_cart = ShoppingCart.create(user: user, products: { product1.id.to_s => 2, product2.id.to_s => 1 })
-      expect(shopping_cart.costo_envio).to eq(350)
-    end
+  test 'is invalid without user' do
+    @shopping_cart.user = nil
+    assert_not @shopping_cart.valid?
+    assert_includes @shopping_cart.errors[:user], "debe existir"
+  end
 
-    it 'returns the fixed shipping cost if the shopping cart is empty' do
-      shopping_cart = ShoppingCart.create(user: user, products: {})
-      expect(shopping_cart.costo_envio).to eq(1000)
-    end
+  test 'is valid without products' do
+    @shopping_cart.products = {}
+    assert @shopping_cart.valid?
+  end
+
+  test 'total price is calculated correctly' do
+    expected_total_price = (@product1.precio.to_i * 2) + (@product2.precio.to_i * 1)
+    assert_equal expected_total_price, @shopping_cart.precio_total
+  end
+
+  test 'total price is zero with no products' do
+    @shopping_cart.products = {}
+    assert_equal 0, @shopping_cart.precio_total
+  end
+
+  test 'shipping cost is calculated correctly' do
+    expected_shipping_cost = 1000 + ((@product1.precio.to_i * 2 * 0.05).round(0)) + ((@product2.precio.to_i * 1 * 0.05).round(0))
+    assert_equal expected_shipping_cost, @shopping_cart.costo_envio
   end
 end
