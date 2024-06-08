@@ -1,1 +1,10 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# test/fixtures/solicituds.yml
+# one:
+#   status: 'Pendiente'
+#   stock: 10
+#   product: one # This assumes you have a fixture named 'one' in products.yml
+#   user: one # This assumes you have a fixture named 'one' in users.yml
+#   reservation_info: 'Solicitud de reserva para el día 01/01/2022, a las 12:00 hrs'
+

@@ -1,7 +1,8 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.1.3'
+# ruby '3.1.3'
+ruby '3.0.0'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.0.4', '>= 7.0.4.3'
@@ -42,6 +43,8 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
 
+gem 'actionview', '~> 7.0.7'
+
 # Use Sass to process CSS
 # gem "sassc-rails"
 
@@ -54,7 +57,9 @@ group :development, :test do
   # Cypress on Rails gem
   gem 'cypress-on-rails', '~> 1.0'
   # Rspec gem
-  gem 'rspec-rails', '~> 6.0.0'
+  gem 'rspec-rails', '~> 5.0'
+  # SimpleCov gem
+  gem 'simplecov', require: false
 end
 
 group :development do
@@ -72,6 +77,7 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem 'capybara'
   gem 'database_cleaner-active_record'
+  gem 'mocha'
   gem 'selenium-webdriver'
   gem 'webdrivers'
 end
@@ -81,7 +87,7 @@ gem 'rubocop-rails', require: false
 
 gem 'devise' # Para autenticacion
 
-gem 'simplecov', require: false, group: :test # Para pruebas
+# gem 'simplecov', require: false, group: :test # Para pruebas
 
 gem 'cloudinary' # Para subir imagenes a la nube
 
