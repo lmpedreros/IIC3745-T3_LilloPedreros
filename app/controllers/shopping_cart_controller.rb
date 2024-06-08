@@ -31,10 +31,18 @@ class ShoppingCartController < ApplicationController
   # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity
   # Agregar producto al carro de compras
   def insertar_producto(buy_now: false)
+    buy_now = params[:buy_now] || false
     if user_signed_in?
       @shopping_cart = ShoppingCart.find_by(user_id: current_user.id)
       # Si no existe carro, crear carro
-      @shopping_cart = crear_carro if @shopping_cart.nil?
+      if @shopping_cart.nil?
+        @shopping_cart = crear_carro
+        if @shopping_cart.is_a?(String)
+          flash[:alert] = @shopping_cart
+          redirect_to :root
+          return
+        end
+      end
       # Leer parametros de id producto y cantidad
       product_id = params[:product_id]
       amount = add_product_params[:amount].to_i
@@ -164,10 +172,11 @@ class ShoppingCartController < ApplicationController
     shopping_cart.user_id = current_user.id
     # Productos son guardados como {product_id => amount}
     shopping_cart.products = {}
-    return shopping_cart if shopping_cart.save
-
-    flash[:alert] = 'Hubo un error al crear el carro. Contacte un administrador.'
-    redirect_to :root
+    if shopping_cart.save
+      return shopping_cart
+    else
+      return 'Hubo un error al crear el carro. Contacte un administrador.'
+    end
   end
 
   def comprobar_productos(shopping_cart)

@@ -164,6 +164,8 @@ GEM
     mime-types-data (3.2023.0808)
     mini_mime (1.1.5)
     minitest (5.19.0)
+    mocha (2.3.0)
+      ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
     multi_xml (0.6.0)
     net-imap (0.3.7)
@@ -278,6 +280,7 @@ GEM
       rack (>= 1.1)
       rubocop (>= 1.33.0, < 2.0)
     ruby-progressbar (1.13.0)
+    ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
     sassc (2.4.0)
       ffi (~> 1.9)
@@ -359,6 +362,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   jquery-rails (~> 4.3.5)
+  mocha
   pg (~> 1.1)
   popper_js (~> 1.16)
   puma (~> 5.0)
