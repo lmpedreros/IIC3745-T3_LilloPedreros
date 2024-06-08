@@ -19,6 +19,7 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: 3.0.0
           bundler-cache: true
       - name: Run Rubocop
         run: bundle exec rubocop --auto-correct --parallel
@@ -28,21 +29,35 @@ jobs:
       postgres:
         image: postgres
         ports:
-          - "5432:5432"
+          - "5433:5432"
         env:
           POSTGRES_DB: testing_db_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
     env:
       RAILS_ENV: test
-      DATABASE_URL: "postgres://postgres:password@localhost:5432/testing_db_test"
+      DATABASE_URL: "postgres://postgres:password@localhost:5433/testing_db_test"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@ee2113536afb7f793eed4ce60e8d3b26db912da4 # v1.127.0
         with:
+          ruby-version: 3.0.0
           bundler-cache: true
+
+      - name: Disable Bundler frozen mode
+        run: bundle config set frozen false
+
+      - name: Update Bundler to the latest version
+        run: |
+          gem update --system
+          gem install bundler
+
+      - name: Regenerate Gemfile.lock with updated Bundler
+        run: |
+          bundle update --bundler
+          bundle install
       - name: Set execute permissions for bin/rails
         run: chmod +x bin/rails
       - name: Setup test database

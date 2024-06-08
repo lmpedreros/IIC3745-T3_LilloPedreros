@@ -43,6 +43,8 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
 
+gem 'actionview', '~> 7.0.7'
+
 # Use Sass to process CSS
 # gem "sassc-rails"
 
@@ -75,9 +77,9 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem 'capybara'
   gem 'database_cleaner-active_record'
+  gem 'mocha'
   gem 'selenium-webdriver'
   gem 'webdrivers'
-  gem 'mocha'
 end
 
 gem 'rubocop', require: false

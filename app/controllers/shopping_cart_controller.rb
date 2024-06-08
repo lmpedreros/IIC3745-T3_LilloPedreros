@@ -31,18 +31,12 @@ class ShoppingCartController < ApplicationController
   # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity
   # Agregar producto al carro de compras
   def insertar_producto(buy_now: false)
-    buy_now = params[:buy_now] || false
+    buy_now_param = params[:buy_now] || buy_now
     if user_signed_in?
       @shopping_cart = ShoppingCart.find_by(user_id: current_user.id)
       # Si no existe carro, crear carro
-      if @shopping_cart.nil?
-        @shopping_cart = crear_carro
-        if @shopping_cart.is_a?(String)
-          flash[:alert] = @shopping_cart
-          redirect_to :root
-          return
-        end
-      end
+      return if ensure_shopping_cart
+
       # Leer parametros de id producto y cantidad
       product_id = params[:product_id]
       amount = add_product_params[:amount].to_i
@@ -77,7 +71,7 @@ class ShoppingCartController < ApplicationController
       end
       # Guardar carrito
       if @shopping_cart.update(products: @shopping_cart.products)
-        if buy_now
+        if buy_now_param
           redirect_to '/carro/detalle'
           return
         end
@@ -167,16 +161,25 @@ class ShoppingCartController < ApplicationController
     params.require(:address).permit(:nombre, :direccion, :comuna, :region)
   end
 
+  def ensure_shopping_cart
+    return false unless @shopping_cart.nil?
+
+    @shopping_cart = crear_carro
+    return false unless @shopping_cart.is_a?(String)
+
+    flash[:alert] = @shopping_cart
+    redirect_to :root
+    true
+  end
+
   def crear_carro
     shopping_cart = ShoppingCart.new
     shopping_cart.user_id = current_user.id
     # Productos son guardados como {product_id => amount}
     shopping_cart.products = {}
-    if shopping_cart.save
-      return shopping_cart
-    else
-      return 'Hubo un error al crear el carro. Contacte un administrador.'
-    end
+    return shopping_cart if shopping_cart.save
+
+    'Hubo un error al crear el carro. Contacte un administrador.'
   end
 
   def comprobar_productos(shopping_cart)
