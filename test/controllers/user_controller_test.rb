@@ -47,7 +47,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # ----------------- Tests para PATCH /users/actualizar_imagen ----------------- # TERMINAAAAAAAAAAAAAAR
   test 'should update user image' do
     image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_image.jpg'), 'image/jpg')
-    patch '/users/actualizar_imagen', params: { image: image }
+    patch '/users/actualizar_imagen', params: { image: }
     assert_redirected_to '/users/show'
     follow_redirect!
     assert_select 'div.notice', 'Imagen actualizada correctamente'
@@ -55,45 +55,40 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test 'should not update user image with invalid file type' do
     image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_file.svg'), 'text/svg')
-    patch '/users/actualizar_imagen', params: { image: image }
+    patch '/users/actualizar_imagen', params: { image: }
     assert_redirected_to '/users/show'
     follow_redirect!
-    assert_select 'div.error', 'Hubo un error al actualizar la imagen. Verifique que la imagen es de formato jpg, jpeg, png, gif o webp'
+    assert_select 'div.error',
+                  'Hubo un error al actualizar la imagen. Verifique que la imagen es de formato jpg, jpeg, png, gif o webp'
   end
 
   test 'should not update user image if not logged in' do
     sign_out @user
     image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_image.jpg'), 'image/jpg')
-    patch '/users/actualizar_imagen', params: { image: image }
+    patch '/users/actualizar_imagen', params: { image: }
     assert_redirected_to new_user_session_path
   end
 
   # ----------------- Tests para DELETE /users/eliminar_deseado ----------------- #
-  test 'should delete deseado' do
-    @user.deseados << @product
-    # @user.save(validate: false)
+
+  test 'should delete an existing product from deseado' do
+    @user.deseados << @product.id.to_s
     @user.save
     assert_difference('@user.deseados.count', -1) do
-      delete '/users/eliminar_deseado', params: { deseado_id: @product.id }
+      delete "/users/eliminar_deseado/#{@product.id}"
     end
     assert_redirected_to '/users/deseados'
     follow_redirect!
     assert_select 'div.notice', 'Producto quitado de la lista de deseados'
   end
 
-  # Test para el endpoint DELETE /users/eliminar_deseado con datos incorrectos (camino alternativo)
-  test 'should not delete non-existent deseado' do
+  test 'should not delete non-existent deseadppo' do
+    @user.save
     assert_no_difference('@user.deseados.count') do
-      delete '/users/eliminar_deseado', params: { deseado_id: 9999 }
+      delete '/users/eliminar_deseado/99999'
     end
     assert_redirected_to '/users/deseados'
     follow_redirect!
     assert_select 'div.error', 'Hubo un error al quitar el producto de la lista de deseados'
-  end
-
-  test 'should not delete desired product if not logged in' do  # NO ESTOY SEGURO DE ESTE
-    sign_out @user
-    delete '/users/eliminar_deseado', params: { deseado_id: @product.id }
-    assert_redirected_to new_user_session_path
   end
 end

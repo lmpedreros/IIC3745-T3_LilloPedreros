@@ -6,32 +6,32 @@ class UserTest < ActiveSupport::TestCase
   end
 
   # Happy path: instancia válida de User
-  test "should be valid with valid attributes" do
+  test 'should be valid with valid attributes' do
     assert @user.valid?
   end
 
   # ----------------- Tests de validación de atributos ----------------- #
   # Camino alternativo: name no presente
-  test "should be invalid without a name" do
+  test 'should be invalid without a name' do
     # @user.name = ""
     @user.name = nil
     assert_not @user.valid?
   end
 
   # Camino alternativo: name demasiado corto
-  test "should be invalid if name is too short" do
-    @user.name = "A"
+  test 'should be invalid if name is too short' do
+    @user.name = 'A'
     assert_not @user.valid?
   end
 
   # Camino alternativo: name demasiado largo
-  test "should be invalid if name is too long" do
-    @user.name = "A" * 30
+  test 'should be invalid if name is too long' do
+    @user.name = 'A' * 30
     assert_not @user.valid?
   end
 
   # Camino alternativo: email no presente
-  test "should be invalid without an email" do
+  test 'should be invalid without an email' do
     # @user.email = ""
     @user.email = nil
     assert_not @user.valid?
@@ -44,7 +44,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   # Camino alternativo: email no único
-  test "should be invalid with a non-unique email" do
+  test 'should be invalid with a non-unique email' do
     duplicate_user = @user.dup
     @user.save
     assert_not duplicate_user.valid?
@@ -62,7 +62,7 @@ class UserTest < ActiveSupport::TestCase
     @user.role = 'user'
     assert_not @user.admin?
   end
-  
+
   # ----------------- Tests de asociaciones ----------------- #
   test 'destroys associated products when user is destroyed' do
     @user.save
@@ -75,7 +75,7 @@ class UserTest < ActiveSupport::TestCase
   test 'destroys associated reviews when user is destroyed' do
     @user.save
     product = @user.products.create!(nombre: 'Product1', precio: 100, stock: 10, categories: 'Cancha')
-    @user.reviews.create!(tittle: 'Great!', description: 'Loved it', calification: 5, product: product)
+    @user.reviews.create!(tittle: 'Great!', description: 'Loved it', calification: 5, product:)
     assert_difference('Review.count', -1) do
       @user.destroy
     end
@@ -84,7 +84,7 @@ class UserTest < ActiveSupport::TestCase
   test 'destroys associated messages when user is destroyed' do
     @user.save
     product = @user.products.create!(nombre: 'Product1', precio: 100, stock: 10, categories: 'Cancha')
-    @user.messages.create!(body: 'Sample message', product: product)
+    @user.messages.create!(body: 'Sample message', product:)
     assert_difference('Message.count', -1) do
       @user.destroy
     end
@@ -93,7 +93,7 @@ class UserTest < ActiveSupport::TestCase
   test 'destroys associated solicituds when user is destroyed' do
     @user.save
     product = @user.products.create!(nombre: 'Product1', precio: 100, stock: 10, categories: 'Cancha')
-    @user.solicituds.create!(stock: 1, status: 'pending', product: product)
+    @user.solicituds.create!(stock: 1, status: 'pending', product:)
     assert_difference('Solicitud.count', -1) do
       @user.destroy
     end
@@ -117,12 +117,12 @@ class UserTest < ActiveSupport::TestCase
 
   # Camino alternativo: validación de deseados con producto que no existe
   test 'is not valid with a non-existing product in wish list' do
-    @user.deseados << 9999999999
+    @user.deseados << 9_999_999_999
     assert_not @user.valid?
   end
 
   # ----------------- Tests de validación de fortaleza de la contraseña ----------------- # TERMINAAAAAAAAAAAAAAR
-  test 'is valid with a strong password' do  # Happy path de la contraseña
+  test 'is valid with a strong password' do # Happy path de la contraseña
     @user.password = 'StrongPass1!'
     assert @user.valid?
   end
@@ -162,5 +162,4 @@ class UserTest < ActiveSupport::TestCase
     assert_not @user.valid?
     assert_includes @user.errors[:password], 'no es válido incluir como minimo una mayuscula, minuscula y un simbolo'
   end
-
 end
