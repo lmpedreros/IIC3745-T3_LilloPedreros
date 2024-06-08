@@ -127,7 +127,7 @@ GEM
       multipart-post (~> 2)
     faraday-net_http (3.1.0)
       net-http
-    ffi (1.17.0)
+    ffi (1.17.0-x86_64-linux-gnu)
     globalid (1.2.1)
       activesupport (>= 6.1)
     httparty (0.22.0)
@@ -347,7 +347,6 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  actionview (~> 7.0.7)
   ancestry
   bootsnap
   bootstrap (~> 4.4.1)
@@ -382,7 +381,7 @@ DEPENDENCIES
   yard (~> 0.9.26)
 
 RUBY VERSION
-   ruby 3.0.0p0
+   ruby 3.1.3p185
 
 BUNDLED WITH
    2.5.11

@@ -38,9 +38,8 @@ class ProductsController < ApplicationController
       @horarios = nil
     else
       dias = @product.horarios.split(';')
-      horarios = []
-      dias.each do |dia|
-        horarios << dia.split(',')
+      horarios = dias.map do |dia|
+        dia.split(',')
       end
       @horarios = horarios
     end

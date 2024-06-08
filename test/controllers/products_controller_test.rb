@@ -3,11 +3,9 @@ require 'test_helper'
 class ProductsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create!(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
-    @other_user = User.create!(name: 'John2', password: 'Sisisi123!', email: 'hola@gmail.com', role: 'user') # No loggeado
-    # @user3 = User.create!(name: 'John33', password: 'dfgAAd2!', email: 'asdf@gmail.com', role: 'user', deseados: [])
+    @other_user = User.create!(name: 'John2', password: 'Sisisi123!', email: 'hola@gmail.com', role: 'user')
     sign_in @user
     @product = Product.create!(nombre: 'John1', precio: 4000, stock: 1, user_id: @user.id, categories: 'Cancha')
-    # @other_product = Product.create!(nombre: 'John2', precio: 4000, stock: 1, user_id: @other_user.id, categories: 'Cancha')
   end
 
   # ----------------- Tests para GET /products/index ----------------- #
@@ -137,8 +135,8 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should calculate total califications' do
-    review1 = @product.reviews.create!(calification: 4, comentario: 'Good')
-    review2 = @product.reviews.create!(calification: 5, comentario: 'Excellent')
+    @product.reviews.create!(calification: 4, comentario: 'Good')
+    @product.reviews.create!(calification: 5, comentario: 'Excellent')
 
     get "/products/leer/#{@product.id}"
     assert_response :success

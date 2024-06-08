@@ -46,7 +46,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # ----------------- Tests para PATCH /users/actualizar_imagen ----------------- # TERMINAAAAAAAAAAAAAAR
   test 'should update user image' do
-    image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_image.jpg'), 'image/jpg')
+    image = fixture_file_upload(Rails.root.join('test/fixtures/files/test_image.jpg'), 'image/jpg')
     patch '/users/actualizar_imagen', params: { image: }
     assert_redirected_to '/users/show'
     follow_redirect!
@@ -54,17 +54,18 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not update user image with invalid file type' do
-    image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_file.svg'), 'text/svg')
+    image = fixture_file_upload(Rails.root.join('test/fixtures/files/test_file.svg'), 'text/svg')
     patch '/users/actualizar_imagen', params: { image: }
     assert_redirected_to '/users/show'
     follow_redirect!
     assert_select 'div.error',
-                  'Hubo un error al actualizar la imagen. Verifique que la imagen es de formato jpg, jpeg, png, gif o webp'
+                  'Hubo un error al actualizar la imagen. Verifique que la ' \
+                  'imagen es de formato jpg, jpeg, png, gif o webp'
   end
 
   test 'should not update user image if not logged in' do
     sign_out @user
-    image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_image.jpg'), 'image/jpg')
+    image = fixture_file_upload(Rails.root.join('test/fixtures/files/test_image.jpg'), 'image/jpg')
     patch '/users/actualizar_imagen', params: { image: }
     assert_redirected_to new_user_session_path
   end

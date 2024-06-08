@@ -39,7 +39,7 @@ class ContactMessageController < ApplicationController
   #   end
   #
   def mostrar
-    @contact_messages = ContactMessage.all.order(created_at: :desc)
+    @contact_messages = ContactMessage.order(created_at: :desc)
     render 'contacto'
   end
 
