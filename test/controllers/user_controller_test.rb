@@ -45,51 +45,32 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # ----------------- Tests para PATCH /users/actualizar_imagen ----------------- # TERMINAAAAAAAAAAAAAAR
-  # ORIGINAL:
-#   test 'should update image' do
-#     image = fixture_file_upload('test/fixtures/files/test_image.png', 'image/png')
-#     post '/users/actualizar_imagen', params: { image: image }
-#     assert_redirected_to '/users/show'
-#     follow_redirect!
-#     assert_select 'div.notice', 'Imagen actualizada correctamente'
-#   end
+  test 'should update user image' do
+    image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_image.jpg'), 'image/jpg')
+    patch '/users/actualizar_imagen', params: { image: image }
+    assert_redirected_to '/users/show'
+    follow_redirect!
+    assert_select 'div.notice', 'Imagen actualizada correctamente'
+  end
 
-#   test 'should update user image' do
-#     image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_image.jpg'), 'image/jpg')
-#     patch '/users/actualizar_imagen', params: { image: image }
-#     assert_redirected_to '/users/show'
-#     follow_redirect!
-#     assert_select 'div.notice', 'Imagen actualizada correctamente'
-#   end
+  test 'should not update user image with invalid file type' do
+    image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_file.svg'), 'text/svg')
+    patch '/users/actualizar_imagen', params: { image: image }
+    assert_redirected_to '/users/show'
+    follow_redirect!
+    assert_select 'div.error', 'Hubo un error al actualizar la imagen. Verifique que la imagen es de formato jpg, jpeg, png, gif o webp'
+  end
 
-#   test 'should not update user image with invalid file type' do
-#     image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_file.txt'), 'text/plain')
-#     patch '/users/actualizar_imagen', params: { image: image }
-#     assert_redirected_to '/users/show'
-#     follow_redirect!
-#     assert_select 'div.error', 'Hubo un error al actualizar la imagen. Verifique que la imagen es de formato jpg, jpeg, png, gif o webp'
-#   end
-
-#   test 'should not update user image if not logged in' do
-#     sign_out @user
-#     image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_image.jpg'), 'image/jpg')
-#     patch '/users/actualizar_imagen', params: { image: image }
-#     assert_redirected_to new_user_session_path
-#   end
-
-  # ORIGINAL:
-  # Test para el endpoint POST /users/actualizar_imagen con datos incorrectos (camino alternativo)
-#   test 'should not update image with invalid data' do
-#     image = fixture_file_upload('test/fixtures/files/test_image.txt', 'text/plain')
-#     post '/users/actualizar_imagen', params: { image: image }
-#     assert_redirected_to '/users/show'
-#     follow_redirect!
-#     assert_select 'div.error', 'Hubo un error al actualizar la imagen. Verifique que la imagen es de formato jpg, jpeg, png, gif o webp'
-#   end
+  test 'should not update user image if not logged in' do
+    sign_out @user
+    image = fixture_file_upload(Rails.root.join('test', 'fixtures', 'files', 'test_image.jpg'), 'image/jpg')
+    patch '/users/actualizar_imagen', params: { image: image }
+    assert_redirected_to new_user_session_path
+  end
 
   # ----------------- Tests para DELETE /users/eliminar_deseado ----------------- #
   test 'should delete deseado' do
-    @user.deseados << @product.id
+    @user.deseados << @product
     # @user.save(validate: false)
     @user.save
     assert_difference('@user.deseados.count', -1) do
