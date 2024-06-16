@@ -43,7 +43,16 @@ jobs:
         uses: ruby/setup-ruby@ee2113536afb7f793eed4ce60e8d3b26db912da4 # v1.127.0
         with:
           bundler-cache: true
-
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
+      - name: Install ChromeDriver
+        uses: nanasess/setup-chromedriver@master
+        with:
+          chromedriver_version: 'latest'
       - name: Set execute permissions for bin/rails
         run: chmod +x bin/rails
       - name: Setup test database
