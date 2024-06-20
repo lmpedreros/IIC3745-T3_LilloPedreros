@@ -43,7 +43,10 @@ class User < ApplicationRecord
   # Valida la fortaleza de la contraseña.
   # Se llama por el lado de devise al instanciar/modificar no es necesario testear por separado
   def validate_password_strength
-    return if password.blank?
+    if password.blank?
+      errors.add(:password, 'no puede estar en blanco')
+      return
+    end
 
     return if password.match(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[[:^alnum:]])/x)
 
