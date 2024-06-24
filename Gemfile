@@ -61,7 +61,7 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri mingw x64_mingw]
   # Cypress on Rails gem
-  gem 'cypress-on-rails', '~> 1.0'
+  gem 'cypress-on-rails'
   # Rspec gem
   gem 'rspec-rails', '~> 6.1.0'
   # SimpleCov gem
@@ -85,7 +85,10 @@ group :test do
   gem 'database_cleaner-active_record'
   gem 'mocha'
   gem 'selenium-webdriver'
-  # gem 'webdrivers'
+
+  gem 'shoulda-matchers', '~> 4.0'
+  gem 'webdrivers'
+
 end
 
 gem 'rubocop', require: false
@@ -110,4 +113,6 @@ gem 'yard', '~> 0.9.26'
 
 gem 'httparty'
 gem 'rails-controller-testing'
+
+gem 'dotenv-rails', groups: [:development, :test]
 

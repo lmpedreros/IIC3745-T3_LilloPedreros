@@ -129,6 +129,10 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.5.1)
     docile (1.4.0)
+    dotenv (3.1.2)
+    dotenv-rails (3.1.2)
+      dotenv (= 3.1.2)
+      railties (>= 6.1)
     drb (2.2.1)
     erubi (1.12.0)
     execjs (2.9.1)
@@ -315,6 +319,8 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    shoulda-matchers (4.5.1)
+      activesupport (>= 4.2.0)
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -371,10 +377,11 @@ DEPENDENCIES
   cancancan
   capybara
   cloudinary
-  cypress-on-rails (~> 1.0)
+  cypress-on-rails
   database_cleaner-active_record
   debug
   devise
+  dotenv-rails
   httparty
   importmap-rails
   jbuilder
@@ -390,6 +397,10 @@ DEPENDENCIES
   rubocop-rails
   rubyzip (~> 2.3)
   selenium-webdriver
+<<<<<<< HEAD
+=======
+  shoulda-matchers (~> 4.0)
+>>>>>>> d648edd9bec941c6a7cdb9b6024101d69ad6ea33
   simplecov
   sprockets-rails
   stimulus-rails
