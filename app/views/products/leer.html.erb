@@ -96,8 +96,12 @@
                                                     <input class="input" type="number" id="quantity" name="solicitud[stock]" min="1" max="100" step="1" value="1" placeholder="1">
                                                 </p>
                                                 <label class="label">Selecciona fecha y hora de reserva</label>
-                                                <div class="control">
-                                                    <input class="input" type="datetime-local" name="solicitud[reservation_datetime]" required>
+                                                <div class="control mb-3">
+                                                    <select class="input" name="solicitud[reservation_datetime]" required>
+                                                        <% @horarios.each do |horario| %>
+                                                            <option value="<%= horario[0] %> <%= horario[1] %>"><%= horario[0] %> de <%= horario[1] %> a <%= horario[2] %></option>
+                                                        <% end %>
+                                                    </select>
                                                 </div>
                                                 <p class="control">
                                                     <button class="button is-primary">Reservar ahora</button>

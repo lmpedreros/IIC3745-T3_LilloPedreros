@@ -375,7 +375,7 @@ DEPENDENCIES
   cancancan
   capybara
   cloudinary
-  cypress-on-rails (~> 1.0)
+  cypress-on-rails
   database_cleaner-active_record
   debug
   devise
