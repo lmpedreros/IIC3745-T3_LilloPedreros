@@ -11,14 +11,14 @@ development:
   database: <%= ENV['CYPRESS'] ? 'Testing_db_test' : 'Testing_db_development' %> # Se ocupa la base de datos development cuando no este definido Cypress=1
   username: <%= ENV["DB_USER"] %>
   password: <%= ENV["DB_PASSWORD"] %>
-  port: <%= ENV['DB_PORT'] %>
+  port: <%= ENV['DB_PORT'] || '5432' %>
 
 test:
   <<: *default
   database: Testing_db_test
   username: <%= ENV["DB_USER"] %>
   password: <%= ENV["DB_PASSWORD"] %>
-  port: <%= ENV['DB_PORT'] %>
+  port: <%= ENV['DB_PORT'] || '5432' %>
 
 production:
   <<: *default
