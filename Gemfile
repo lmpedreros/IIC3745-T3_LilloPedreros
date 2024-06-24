@@ -85,7 +85,10 @@ group :test do
   gem 'database_cleaner-active_record'
   gem 'mocha'
   gem 'selenium-webdriver'
-  # gem 'webdrivers'
+
+  gem 'shoulda-matchers', '~> 4.0'
+  gem 'webdrivers'
+
 end
 
 gem 'rubocop', require: false
