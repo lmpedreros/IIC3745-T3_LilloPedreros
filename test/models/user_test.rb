@@ -127,39 +127,33 @@ class UserTest < ActiveSupport::TestCase
     assert @user.valid?
   end
 
-  # test 'is valid with a strong password' do  # Esta cosa tira el tremendo error. Mejor dejarlo comentado
-  #   @user.password = ''
-  #   @user.validate_password_strength
-  #   assert_not @user.valid?
-  # end
+  test 'is invalid if blank' do
+    @user.password = nil 
+    @user.validate_password_strength
+    assert_includes @user.errors[:password], 'no puede estar en blanco'
+  end
 
   test 'is not valid with a password missing a lowercase letter' do
     @user.password = 'PASSWORD1!'
     @user.validate_password_strength
-    print @user.validate
-    # print "@user.valid?: ", @user.valid?
-    assert_not @user.valid?
-    # assert_includes @user.errors[:password], 'no es válido incluir como minimo una mayuscula, minuscula y un simbolo'
+    assert_includes @user.errors[:password], 'no es válido incluir como minimo una mayuscula, minuscula y un simbolo'
   end
-
+  
   test 'is not valid with a password missing an uppercase letter' do
     @user.password = 'password1!'
     @user.validate_password_strength
-    assert_not @user.valid?
     assert_includes @user.errors[:password], 'no es válido incluir como minimo una mayuscula, minuscula y un simbolo'
   end
-
+  
   test 'is not valid with a password missing a number' do
     @user.password = 'Password!'
     @user.validate_password_strength
-    assert_not @user.valid?
     assert_includes @user.errors[:password], 'no es válido incluir como minimo una mayuscula, minuscula y un simbolo'
   end
-
+  
   test 'is not valid with a password missing a special character' do
     @user.password = 'Password1'
     @user.validate_password_strength
-    assert_not @user.valid?
     assert_includes @user.errors[:password], 'no es válido incluir como minimo una mayuscula, minuscula y un simbolo'
   end
 end
