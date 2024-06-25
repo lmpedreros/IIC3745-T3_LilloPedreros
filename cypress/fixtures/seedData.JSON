@@ -1,0 +1,85 @@
+{
+    "users": [
+      {
+        "email": "user-admin@example.com",
+        "password": "password",
+        "name": "User admin 1",
+        "role": "admin"
+      },
+      {
+        "email": "user-admin2@example.com",
+        "password": "password",
+        "name": "User admin 2",
+        "role": "admin"
+      },
+      {
+        "email": "user3@example.com",
+        "password": "password",
+        "name": "User 3",
+        "role": "user"
+      }
+    ],
+    "products": [
+      {
+        "user": "user1",
+        "nombre": "Cancha de badminton",
+        "precio": "5000",
+        "stock": "5",
+        "categories": "Cancha",
+        "horarios": "30/06/2024,18:00,19:00;30/06/2024,22:00,23:00;04/07/2024,16:00,17:00"
+      },
+      {
+        "user": "user1",
+        "nombre": "Smartwatch",
+        "precio": "20000",
+        "stock": "20",
+        "categories": "Accesorio tecnologico"
+      },
+      {
+        "user": "user2",
+        "nombre": "Raqueta de Tenis",
+        "precio": "15000",
+        "stock": "10",
+        "categories": "Accesorio deportivo"
+      },
+      {
+        "user": "user2",
+        "nombre": "Mancuernas",
+        "precio": "8000",
+        "stock": "15",
+        "categories": "Accesorio de entrenamiento"
+      }
+    ],
+    "shoppingCarts": [
+      {
+        "user": "user2",
+        "products": {
+          "product1": 1,
+          "product2": 3
+        }
+      },
+      {
+        "user": "user3",
+        "products": {
+          "product2": 2,
+          "product3": 3,
+          "product4": 10
+        }
+      }
+    ],
+    "solicitudes": [
+    {
+      "user": "user2",
+      "product": "product1",
+      "stock": 1,
+      "status": "Pendiente",
+      "reservation_info": "Solicitud de reserva para el día 30/06/2024, a las 22:00 hrs"
+    },
+    {
+      "user": "user3",
+      "product": "product3",
+      "stock": 3,
+      "status": "Aprobada"
+    }
+  ]
+}

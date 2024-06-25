@@ -1,0 +1,23 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5017:5017"
+    networks:
+      - my_network
+  cypress:
+    image: cypress/included:12.0.0
+    depends_on:
+      - web
+    entrypoint: ["yarn", "cypress", "run"]
+    volumes:
+      - .:/e2e
+    working_dir: /e2e
+    environment:
+      - CYPRESS_baseUrl=http://web:5017
+    networks:
+      - my_network
+networks:
+  my_network:
+    driver: bridge
