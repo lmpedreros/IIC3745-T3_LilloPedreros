@@ -1,15 +1,10 @@
 // Happy Path
-describe('Formulario de Creación de Producto - Happy Path', () => {
+describe('Formulario de Creación de Producto - Happy Path.', () => {
     it('Permitir crear un producto con datos válidos', () => {
-        // Visitar la página de creación de productos
-        cy.visit('/');
-
-        // Verificar que se haya cargado la página correctamente
-        cy.url().should('include', '/'); // Verifica que la URL contenga '/'
+        cy.visit('http://localhost:5017');
 
         // ======================================================================================================================================
         cy.get('#navbarPrincipal').invoke('show');
-
         cy.get('.navbar-burger').then(($burger) => {
             if ($burger.is(':visible')) {
                 cy.wrap($burger).click();
@@ -21,7 +16,7 @@ describe('Formulario de Creación de Producto - Happy Path', () => {
 
         // Ingresamos las credenciales (en este caso las del usuario X) e iniciamos sesión
         cy.fixture('seedData').then((data) => {
-            const user = data.users[6];
+            const user = data.users[0];
             cy.get('input[name="user[email]"]').type(user.email);
             cy.get('input[name="user[password]"]').type(user.password);
             cy.get('input[name="commit"]').click();
@@ -37,37 +32,221 @@ describe('Formulario de Creación de Producto - Happy Path', () => {
             }
         });
         cy.get('#navbarPrincipal.navbar-menu').invoke('show');
+        cy.get('.navbar-burger').then(($burger) => {
+            if ($burger.is(':visible')) {
+                cy.wrap($burger).click();
+            }
+        });
+        cy.get('hr.navbar-divider.has-background-info-light').then(($divider) => {
+            if ($divider.is(':visible')) {
+                // Realizar alguna acción si el divisor es visible
+                cy.wrap($divider).should('be.visible'); // Aseguramos que el divisor sea visible
+            }
+        });
 
-        // Verificar que el botón "Crear producto" esté visible y hacer clic en él
-        cy.get('.navbar-item.has-dropdown.is-hoverable') // Selecciona el elemento que contiene el botón
-            .contains('Productos') // Encuentra el enlace que contiene 'Productos'
-            .click();
+        cy.contains('Crear producto').click();
+        cy.url().then((url) => {
+            cy.log('URL actual:', url);
+        });
+        cy.url().should('include', '/products/crear');
 
-        // Esperar a que aparezca el menú desplegable y hacer clic en "Crear producto"
-        cy.get('.navbar-dropdown.is-left') // Selecciona el menú desplegable
-            .contains('Crear producto') // Encuentra el enlace que contiene 'Crear producto'
-            .click();
+        // ======================================================================================================================================
 
-        // Verificar que la URL haya cambiado a la página de creación de producto
-        cy.url().should('include', '/products/crear'); // Verifica que la URL contenga '/products/crear'
+        cy.fixture('seedData').then((data) => {
+            const product = data.products[0];
+            cy.get('input[name="product[nombre]"]').type(product.nombre);
+            cy.get('select[name="product[categories]"]').should('be.visible').select('Equipamiento');
+            cy.get('input[name="product[precio]"]').type(product.precio);
+            cy.get('input[name="product[stock]"]').type(product.stock);
+            cy.get('button').contains('Guardar').should('be.visible').click();
+        });
 
-        // Llenar el formulario con datos válidos
-        // cy.get('input[name="product[nombre]"]').type('Raqueta de Tenis');
-        // cy.get('input[name="product[descripcion]"]').type('Raqueta de tenis de alta calidad.');
-        // cy.get('input[name="product[precio]"]').type('100');
-        // cy.get('input[name="product[stock]"]').type('50');
-
-        // // Enviar el formulario
-        // cy.get('input[name="commit"]').click();
-
-        // // Verificar que el producto se ha creado correctamente
-        // cy.contains('Producto creado exitosamente').should('be.visible');
-        // cy.url().should('include', '/products/show');
+        cy.url().should('include', '/products/index');
     });
 });
 
 // Camino alternativo 1
+describe('Formulario de Creación de Producto - Camino Alternativo 1', () => {
+    it('No permitir crear un producto sin nombre', () => {
+        cy.visit('http://localhost:5017');
+
+        cy.get('#navbarPrincipal').invoke('show');
+        cy.get('.navbar-burger').then(($burger) => {
+            if ($burger.is(':visible')) {
+                cy.wrap($burger).click();
+            }
+        });
+
+        cy.contains('Iniciar Sesión').click();
+
+        cy.fixture('seedData').then((data) => {
+            const user = data.users[0];
+            cy.get('input[name="user[email]"]').type(user.email);
+            cy.get('input[name="user[password]"]').type(user.password);
+            cy.get('input[name="commit"]').click();
+        });
+
+        cy.get('#navbarPrincipal').invoke('show');
+        cy.get('#navbarPrincipal.navbar-menu').invoke('show');
+
+        cy.get('.navbar-burger').then(($burger) => {
+            if ($burger.is(':visible')) {
+                cy.wrap($burger).click();
+            }
+        });
+        cy.get('#navbarPrincipal.navbar-menu').invoke('show');
+        cy.get('.navbar-burger').then(($burger) => {
+            if ($burger.is(':visible')) {
+                cy.wrap($burger).click();
+            }
+        });
+        cy.get('hr.navbar-divider.has-background-info-light').then(($divider) => {
+            if ($divider.is(':visible')) {
+                // Realizar alguna acción si el divisor es visible
+                cy.wrap($divider).should('be.visible'); // Aseguramos que el divisor sea visible
+            }
+        });
+
+        // Navegamos a la página de creación de productos
+        cy.contains('Crear producto').click();
+        cy.url().should('include', '/products/crear');
+
+        // Llenar el formulario sin el nombre del producto
+        cy.fixture('seedData').then((data) => {
+            const product = data.products[0];
+            cy.get('select[name="product[categories]"]').select('Equipamiento');
+            cy.get('input[name="product[precio]"]').type(product.precio);
+            cy.get('input[name="product[stock]"]').type(product.stock);
+
+            cy.get('input[name="product[nombre]"]').then(($input) => {
+                $input[0].checkValidity();
+                const validationMessage = $input[0].validationMessage;
+                expect(validationMessage).to.be.oneOf(['Rellene este campo.', 'Please fill out this field.']);
+            });
+        });
+    });
+});
+
 
 // Camino alternativo 2
+describe('Formulario de Creación de Producto - Camino Alternativo 2', () => {
+    it('No permitir crear un producto con precio inválido', () => {
+        cy.visit('http://localhost:5017');
+
+        cy.get('#navbarPrincipal').invoke('show');
+        cy.get('.navbar-burger').then(($burger) => {
+            if ($burger.is(':visible')) {
+                cy.wrap($burger).click();
+            }
+        });
+
+        cy.contains('Iniciar Sesión').click();
+
+        cy.fixture('seedData').then((data) => {
+            const user = data.users[0];
+            cy.get('input[name="user[email]"]').type(user.email);
+            cy.get('input[name="user[password]"]').type(user.password);
+            cy.get('input[name="commit"]').click();
+        });
+
+        cy.get('#navbarPrincipal').invoke('show');
+        cy.get('#navbarPrincipal.navbar-menu').invoke('show');
+
+        cy.get('.navbar-burger').then(($burger) => {
+            if ($burger.is(':visible')) {
+                cy.wrap($burger).click();
+            }
+        });
+        cy.get('#navbarPrincipal.navbar-menu').invoke('show');
+        cy.get('.navbar-burger').then(($burger) => {
+            if ($burger.is(':visible')) {
+                cy.wrap($burger).click();
+            }
+        });
+        cy.get('hr.navbar-divider.has-background-info-light').then(($divider) => {
+            if ($divider.is(':visible')) {
+                // Realizar alguna acción si el divisor es visible
+                cy.wrap($divider).should('be.visible'); // Aseguramos que el divisor sea visible
+            }
+        });
+
+        // Navegamos a la página de creación de productos
+        cy.contains('Crear producto').click();
+        cy.url().should('include', '/products/crear');
+
+        // Llenamos el formulario mal
+        cy.fixture('seedData').then((data) => {
+            const product = data.products[0];
+            cy.get('input[name="product[nombre]"]').type(product.nombre);
+            cy.get('select[name="product[categories]"]').select('Equipamiento');
+            cy.get('input[name="product[precio]"]').type("mamase mamasa mamacusa");
+            cy.get('input[name="product[stock]"]').type(product.stock);
+            cy.get('button').contains('Guardar').click();
+        });
+
+        // Verificamos que se muestre el mensaje de error
+        cy.contains('Hubo un error al guardar el producto: Precio: no es un número').should('be.visible');
+    });
+});
+
 
 // Camino alternativo 3
+describe('Formulario de Creación de Producto - Camino Alternativo 3', () => {
+    it('No permitir crear un producto con stock inválido', () => {
+        cy.visit('http://localhost:5017');
+
+        cy.get('#navbarPrincipal').invoke('show');
+        cy.get('.navbar-burger').then(($burger) => {
+            if ($burger.is(':visible')) {
+                cy.wrap($burger).click();
+            }
+        });
+
+        cy.contains('Iniciar Sesión').click();
+
+        cy.fixture('seedData').then((data) => {
+            const user = data.users[0];
+            cy.get('input[name="user[email]"]').type(user.email);
+            cy.get('input[name="user[password]"]').type(user.password);
+            cy.get('input[name="commit"]').click();
+        });
+
+        cy.get('#navbarPrincipal').invoke('show');
+        cy.get('#navbarPrincipal.navbar-menu').invoke('show');
+
+        cy.get('.navbar-burger').then(($burger) => {
+            if ($burger.is(':visible')) {
+                cy.wrap($burger).click();
+            }
+        });
+        cy.get('#navbarPrincipal.navbar-menu').invoke('show');
+        cy.get('.navbar-burger').then(($burger) => {
+            if ($burger.is(':visible')) {
+                cy.wrap($burger).click();
+            }
+        });
+        cy.get('hr.navbar-divider.has-background-info-light').then(($divider) => {
+            if ($divider.is(':visible')) {
+                // Realizar alguna acción si el divisor es visible
+                cy.wrap($divider).should('be.visible'); // Aseguramos que el divisor sea visible
+            }
+        });
+
+        // Navegamos a la página de creación de productos
+        cy.contains('Crear producto').click();
+        cy.url().should('include', '/products/crear');
+
+        // Llenar el formulario mal
+        cy.fixture('seedData').then((data) => {
+            const product = data.products[0];
+            cy.get('input[name="product[nombre]"]').type(product.nombre);
+            cy.get('select[name="product[categories]"]').select('Equipamiento');
+            cy.get('input[name="product[precio]"]').type(product.precio);
+            cy.get('input[name="product[stock]"]').type("stock");
+            cy.get('button').contains('Guardar').click();
+        });
+
+        // Verificar que se muestre el mensaje de error
+        cy.contains('Hubo un error al guardar el producto: Stock: no es un número').should('be.visible');
+    });
+});

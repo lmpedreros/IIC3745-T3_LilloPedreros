@@ -1,6 +1,6 @@
 // ESTE TEST SOLO FUNCIONA SI SE USA UN USUARIO DE LA SEED QUE YA HA SIDO CREADO EN LA PÁGINA.
 
-describe('Navegación a "Mi cuenta" con usuario ya creado', () => {
+describe('Navegación a "Mi cuenta" con usuario ya creado.', () => {
     it('Debería navegar desde la página de inicio hasta la página "Mi cuenta" con un usuario YA creado', () => {
         cy.visit('http://localhost:5017'); // cy.visit es para visitar la página... o algo así
 
