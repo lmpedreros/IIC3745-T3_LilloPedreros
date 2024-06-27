@@ -29,6 +29,18 @@
             "password": "password",
             "name": "User 5",
             "role": "user"
+        },
+        {
+            "email": "user-admin3@example.com",
+            "password": "password",
+            "name": "User admin 3",
+            "role": "admin"
+        },
+        {
+            "email": "user-admin4@example.com",
+            "password": "password",
+            "name": "User admin 4",
+            "role": "admin"
         }
     ],
     "products": [
