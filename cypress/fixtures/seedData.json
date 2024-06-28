@@ -1,6 +1,24 @@
 {
     "users": [
         {
+            "email": "user-admin9899@example.com",
+            "password": "password",
+            "name": "User admin 9998",
+            "role": "admin"
+        },
+        {
+            "email": "user-admin98@example.com",
+            "password": "password",
+            "name": "User admin 98",
+            "role": "admin"
+        },
+        {
+            "email": "user-admin100@example.com",
+            "password": "password",
+            "name": "User admin 100",
+            "role": "admin"
+        },
+        {
             "email": "user-admin@example.com",
             "password": "password",
             "name": "User admin 1",
@@ -40,6 +58,18 @@
             "email": "user-admin4@example.com",
             "password": "password",
             "name": "User admin 4",
+            "role": "admin"
+        },
+        {
+            "email": "user-admin5@example.com",
+            "password": "password",
+            "name": "User admin 5",
+            "role": "admin"
+        },
+        {
+            "email": "user-admin99@example.com",
+            "password": "password",
+            "name": "User admin 99",
             "role": "admin"
         }
     ],

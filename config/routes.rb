@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   
-  mount CypressOnRails::Engine => '/cypress' if Rails.env.test?
+  # mount CypressOnRails::Engine => '/cypress' if Rails.env.test?
+  # if Rails.env.test?
+  #   require 'cypress_on_rails'
+  #   mount CypressOnRails::Engine => '/cypress' if Rails.env.test?
+  # end
 
   # Rutas generales
   root 'pages#index'

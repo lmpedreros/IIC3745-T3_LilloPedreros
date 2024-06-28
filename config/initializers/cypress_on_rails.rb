@@ -26,3 +26,12 @@ if defined?(CypressOnRails)
   #  end
   # end
 end
+# if Rails.env.test?
+#   require 'cypressonrails'
+#   CypressOnRails.configure do |c|
+#     c.api_prefix = ""
+#     c.install_folder = File.expand_path("#{__dir}/../../cypress")
+#     c.use_middleware = !Rails.env.production?
+#     c.logger = Rails.logger
+#   end
+# end

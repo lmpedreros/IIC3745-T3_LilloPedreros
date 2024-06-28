@@ -2,8 +2,8 @@ require 'test_helper'
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @user = User.create!(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com', role 'admin')
-    @user2 = User.create!(name: 'John2', password: 'Sisisi123!', email: 'hola@gmail.com', role 'user')
+    @user = User.create!(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
+    @user2 = User.create!(name: 'John2', password: 'Sisisi123!', email: 'hola@gmail.com', role: 'user')
     @product = Product.create!(nombre: 'Product1', precio: 4000, stock: 1, user_id: @user.id, categories: 'Cancha')
     sign_in @user
   end

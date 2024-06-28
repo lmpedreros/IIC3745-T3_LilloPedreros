@@ -17,7 +17,7 @@ describe('Navegación a "Mi cuenta" con usuario ya creado.', () => {
 
         // Ingresamos las credenciales (en este caso las del usuario X) e iniciamos sesión
         cy.fixture('seedData').then((data) => {
-            const user = data.users[4];
+            const user = data.users[0];
             cy.get('input[name="user[email]"]').type(user.email);
             cy.get('input[name="user[password]"]').type(user.password);
             cy.get('input[name="commit"]').click();
